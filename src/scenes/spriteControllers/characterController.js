@@ -20,12 +20,6 @@ export default class characterController {
   handleMainCharacter() { // ------ Main character movement/events
 		const mouseWorldX = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).x;
 		const mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
-		const targetBodyRad = Phaser.Math.Angle.Between(
-			this.body.x, this.body.y,
-			mouseWorldX, mouseWorldY
-		);
-
-		const mouseBodyAngle = Phaser.Math.RadToDeg(targetBodyRad);
 
 		const targetGunRad = Phaser.Math.Angle.Between(
 			this.gun.x, this.gun.y,
@@ -44,25 +38,19 @@ export default class characterController {
 		if (this.shootTimer > 0) {
 			this.shootTimer--;
 		}
-		if (mouseBodyAngle > -90 && mouseBodyAngle < 100) {
+		if (this.moveRObj.isDown) {
 			this.dir = 'right';
-		} else {
-			this.dir = 'left';
-		}
-
-		if (this.moveObj.isDown) {
-			if (this.dir === 'left' && this.pos.x > 5) {
-				if (!this.onGround) {
-					this.dx = -7;
-				} else {
-					this.dx = -5;
-				}
+			if (!this.onGround) {
+				this.dx = 7;
 			} else {
-				if (!this.onGround) {
-					this.dx = 7;
-				} else {
-					this.dx = 5;
-				}
+				this.dx = 5;
+			}
+		} else if (this.moveLObj.isDown) {
+			this.dir = 'left';
+			if (!this.onGround) {
+				this.dx = -7;
+			} else {
+				this.dx = -5;
 			}
 		} else {
 			this.dx = 0;

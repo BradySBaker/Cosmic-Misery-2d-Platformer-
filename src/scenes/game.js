@@ -39,7 +39,8 @@ export default class Game extends Phaser.Scene {
 		})
 		this.physics.world.setBoundsCollision(false, false, false, true);
 
-		this.char.moveObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+		this.char.moveRObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+		this.char.moveLObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 		this.char.jumpObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
 		this.gameWidth = this.sys.game.canvas.width
