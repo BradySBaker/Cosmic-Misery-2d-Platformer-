@@ -10,6 +10,7 @@ export default class Game extends Phaser.Scene {
 	}
 
 	create() {
+		// this.physics.world.timeScale = 2;
 
 		this.backgrounds = [];
 
@@ -74,7 +75,7 @@ export default class Game extends Phaser.Scene {
     enemy.destroy();
 });
 this.cameras.main.startFollow(this.char.body, true, 0.5, 0.5, 0, 0);
-// this.enemySpawner();
+this.enemySpawner();
 
 if (this.physics.world.isPaused) {
 	this.physics.resume();
@@ -93,7 +94,8 @@ if (this.physics.world.isPaused) {
 			if (gameObject.name === 'projectile') {
 				gameObject.body.setVelocityX(gameObject.body.velocity.x - this.char.dx);
 			} else {
-				gameObject.x += this.char.dx;
+				console.log('occured');
+				gameObject.x -= this.char.dx;
 			}
 		});
 
