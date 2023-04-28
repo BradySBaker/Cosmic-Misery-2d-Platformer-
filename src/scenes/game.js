@@ -10,7 +10,6 @@ export default class Game extends Phaser.Scene {
 	}
 
 	create() {
-		// this.physics.world.timeScale = 2;
 
 		this.backgrounds = [];
 

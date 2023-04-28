@@ -1,1 +1,0 @@
-{"mappings":"AAAA;;;;AAIA","sources":["src/style.css"],"sourcesContent":["body {\n\tbackground-color: #2c003e;\n}\n\ncanvas {\n\tposition: absolute;\n\ttop: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}"],"names":[],"version":3,"file":"index.2cdaf7bc.css.map","sourceRoot":"/__parcel_source_root/"}
