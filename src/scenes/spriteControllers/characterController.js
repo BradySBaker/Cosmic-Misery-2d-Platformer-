@@ -10,8 +10,11 @@ export default class characterController {
 		this.dy = 0;
 		this.dir = 'right';
 		this.pos = {x: 100, y: this.scene.gameHeight}
-		this.body = this.scene.add.rectangle(this.pos.x, this.pos.y, 20, 80, 0xfff, 1);
-		this.body.setOrigin(1, 1);
+		this.character = this.scene.physics.add.sprite(this.pos.x, this.pos.y, 'mainCharacter');
+		this.character.body.setCollideWorldBounds(false);
+		this.character.body.setAllowGravity(false);
+
+		this.character.setOrigin(1, 1);
 		this.gun = this.scene.add.rectangle(this.pos.x-8, this.pos.y - 60, 40, 5, 0xffffff, 1);
 		this.gun.setOrigin(0, 0);
     this.shootTimer = 0;
@@ -84,7 +87,7 @@ export default class characterController {
 
 
 	setMainCharacterPos() { // ------- Char pos
-		this.body.y = this.pos.y;
+		this.character.y = this.pos.y;
 		this.gun.y = this.pos.y - 60;
 	}
 }

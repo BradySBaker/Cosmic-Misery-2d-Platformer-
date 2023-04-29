@@ -1,6 +1,7 @@
 import Phaser from "phaser";
-
 import Game from "./scenes/game";
+import SpinePlugin from 'spine'
+
 
 const config = {
 	width: 945,
@@ -11,9 +12,14 @@ const config = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 1000 },
-			debug: false
+			debug: true
 		}
-	}
+	},
+	plugins: {
+    scene: [
+      { key: 'SpinePlugin', plugin: SpinePlugin, mapping: 'spine' }
+    ]
+  }
 }
 
 const game = new Phaser.Game(config);

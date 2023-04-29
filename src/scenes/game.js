@@ -7,9 +7,13 @@ export default class Game extends Phaser.Scene {
 		this.load.image('ground', '..//assets/ground.png');
 		this.load.image('mountains1', '..//assets/mountains1.png');
 		this.load.image('mountains2', '..//assets/mountains2.png');
+		this.load.image('mainCharacter', '..//assets/mainCharacter.png');
+		this.add
 	}
 
 	create() {
+
+		this.add.sprite(100, 100, 'player');
 
 		this.backgrounds = [];
 
@@ -73,8 +77,10 @@ export default class Game extends Phaser.Scene {
 
 	this.physics.add.overlap(this.projectileGroup, this.enemyGroup, (circle, enemy) => {
     enemy.destroy();
-});
-this.cameras.main.startFollow(this.char.body, true, 0.5, 0.5, 0, 0);
+	});
+
+
+this.cameras.main.startFollow(this.char.character, true, 0.5, 0.5, 0, 0);
 this.enemySpawner();
 
 if (this.physics.world.isPaused) {
@@ -85,7 +91,7 @@ if (this.physics.world.isPaused) {
 	update() {
 		this.gameObjectsGroup.children.iterate((gameObject) => {
 			if (gameObject.name === 'enemy' && this.char.onGround) {
-				if (gameObject.x < this.char.body.x) {
+				if (gameObject.x < this.char.character.x) {
 					gameObject.body.setVelocityX(100);
 				} else {
 					gameObject.body.setVelocityX(-100);
@@ -94,14 +100,12 @@ if (this.physics.world.isPaused) {
 			if (gameObject.name === 'projectile') {
 				gameObject.body.setVelocityX(gameObject.body.velocity.x - this.char.dx);
 			} else {
-				console.log('occured');
 				gameObject.x -= this.char.dx;
 			}
 		});
 
 		this.char.handleMainCharacter();
 		this.handleBackgrounds();
-
 	}
 
 
@@ -142,4 +146,5 @@ if (this.physics.world.isPaused) {
 			bg.sprite.tilePositionX = this.char.pos.x * bg.ratioX;
 		}
 	}
+
 }
