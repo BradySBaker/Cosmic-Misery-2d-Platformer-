@@ -79,7 +79,7 @@ export default class Game extends Phaser.Scene {
 
 
 this.cameras.main.startFollow(this.char.character, true, 0.5, 0.5, 0, 0);
-this.enemySpawner();
+// this.enemySpawner();
 
 if (this.physics.world.isPaused) {
 	this.physics.resume();

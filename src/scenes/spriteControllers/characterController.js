@@ -38,62 +38,63 @@ export default class characterController {
 		this.mouseGunAngle = Phaser.Math.RadToDeg(targetGunRad);
 		this.gun.angle = this.mouseGunAngle;
 
-		if (this.jumpObj.isDown === true || !this.onGround) {
+		if (this.jumpObj.isDown === true || !this.onGround) { //Jump pressed/inAir
 			this.handleMainCharacterJump();
 		}
-
+		if (!this.onGround) {
+			if (this.dir === 'left') {
+				this.character.setOffset(10,10);
+				this.gun.x = this.character.x + 10;
+			} else {
+				this.character.setOffset(0,10);
+				this.gun.x = this.character.x - 10;
+			}
+		}
 
 		var moved = false;
 		if (this.shootTimer > 0) {
 			this.shootTimer--;
 		}
-		if (this.moveRObj.isDown) {
+		if (this.moveRObj.isDown) { //D key
 			this.dir = 'right';
+			this.character.flipX = false;
 			if (!this.onGround) {
 				this.dx = 7;
-			} else {
-				if (this.character.flipX) {
-					this.character.flipX = false;
-					this.character.setOffset(43, -5);
-				}
+			} else { //On ground right move
+				this.character.setOffset(43, -5);
+				this.gun.x = this.character.x + 10;
 				if (this.curAnim !== 'run') {
-					this.character.setOffset(43, -5);
-					this.gun.x = this.character.x + 10;
 					this.curAnim = 'run';
 					this.character.play('run');
 				}
 				this.dx = 5;
 			}
-		} else if (this.moveLObj.isDown) {
+		} else if (this.moveLObj.isDown) { //A key
 			this.dir = 'left';
-			this.setCharOffsets();
+			this.character.flipX = true;
 			if (!this.onGround) {
 				this.dx = -7;
-			} else {
-				if (!this.character.flipX) {
-					this.character.flipX = true;
-					this.character.setOffset(31, -5);
-				}
+			} else { //On ground left move
+				this.character.setOffset(31, -5);
+				this.gun.x = this.character.x - 10;
 				if (this.curAnim !== 'run') {
-					this.character.setOffset(31, -5);
-					this.gun.x = this.character.x - 10;
 					this.curAnim = 'run';
 					this.character.play('run');
 
 				}
 				this.dx = -5;
 			}
-		} else {
-			if (this.curAnim !== 'idle') {
+		} else { //No move
+			if (this.curAnim !== 'idle' && this.onGround) { //Set idle settings
 				this.character.play('idle');
 				this.character.setOffset(-5,-4);
 				this.curAnim = 'idle';
 				if (this.dir === 'right') {
 					this.gun.x = this.character.x -3;
 				} else {
-					this.gun.x = this.character.x;
+					this.gun.x = this.character.x + 3;
 				}
-			} else {
+			} else if (this.onGround){ //Anim idle setup
 				var curFrame = this.character.anims.currentFrame;
 				if (curFrame) {
 					if (this.dir === 'right') {
@@ -127,6 +128,8 @@ export default class characterController {
 		if (this.jumpObj.isDown && this.pos.y === this.scene.gameHeight - 70) {
 			this.dy = -20;
 			this.onGround = false;
+			this.curAnim = 'fall';
+			this.character.play('fall')
 		} else if (this.pos.y + this.dy <= this.scene.gameHeight - 70) {
 			if (this.dy < -1 ) {
 				this.dy *= this.g;
@@ -213,10 +216,4 @@ export default class characterController {
 	});
 	}
 
-
-	setCharOffsets() {
-		if (this.dir === 'right') {
-
-		}
-	};
 }
