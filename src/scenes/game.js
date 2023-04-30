@@ -8,12 +8,10 @@ export default class Game extends Phaser.Scene {
 		this.load.image('mountains1', '..//assets/mountains1.png');
 		this.load.image('mountains2', '..//assets/mountains2.png');
 		this.load.image('mainCharacter', '..//assets/mainCharacter.png');
-		this.add
+		this.load.atlas('player', '..//assets/player/player.png', '..//assets/player/player.json', true);
 	}
 
 	create() {
-
-		this.add.sprite(100, 100, 'player');
 
 		this.backgrounds = [];
 
