@@ -99,15 +99,15 @@ export default class characterController {
 				if (curFrame) {
 					if (this.dir === 'right') {
 						if (curFrame.index > 10 && this.gun.x > this.character.x - 10) {
-							this.gun.x -= .3;
+							this.gun.x -= .4;
 						} else if (this.gun.x < this.character.x + 15 && curFrame.index > 2) {
-							this.gun.x += .3;
+							this.gun.x += .4;
 						}
 					} else { // character is facing left
 						if (curFrame.index > 10 && this.gun.x < this.character.x + 10) {
-							this.gun.x += .3;
+							this.gun.x += .4;
 						} else if (this.gun.x > this.character.x - 15 && curFrame.index > 2) {
-							this.gun.x -= .3;
+							this.gun.x -= .4;
 						}
 					}
 				}
@@ -207,7 +207,7 @@ export default class characterController {
 		frames: this.character.anims.generateFrameNames('player', {
 				prefix: 'inAir/inAir_',
 				start: 0,
-				end: 13,
+				end: 9,
 				zeroPad: 2,
 				suffix: '.png'
 		}),
