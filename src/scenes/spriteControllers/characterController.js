@@ -244,7 +244,7 @@ export default class characterController {
 				targetArmRad -= Math.PI*2;
 		}
 		var mouseArmAngle;
-		if (radAng < targetArmRad) { //If arm going down
+		if ((radAng < targetArmRad && this.dir === 'right') || radAng > targetArmRad && this.dir === 'left' ) { //If arm going down
 			mouseArmAngle = Phaser.Math.RadToDeg(targetArmRad);
 		} else { //If arm going up
 			const interpolatedArmRad = Phaser.Math.Interpolation.Bezier([radAng, targetArmRad], .07);
