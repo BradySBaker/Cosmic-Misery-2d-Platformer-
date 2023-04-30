@@ -24,34 +24,28 @@ export default class characterController {
 		this.character.body.setAllowGravity(false);
 
 		this.character.setOrigin(1, 1);
-		this.gun = this.scene.add.rectangle(this.character.x, this.pos.y - 35, 40, 5, 0xffffff, 1);
 
-		this.gun.setOrigin(0, 0);
+		this.arm = this.scene.add.image(this.character.x, this.pos.y - 35, 'playerArm')
+		this.forearm = this.scene.add.image(this.arm.x, this.arm.y, 'playerForearm');
+		this.arm.setScale(.2);
+		this.forearm.setScale(.2);
+		this.forearm.setOrigin(0,0);
+		this.arm.setOrigin(0, 0);
     this.shootTimer = 0;
 	}
 
   handleMainCharacter() { // ------ Main character movement/events
-		const mouseWorldX = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).x;
-		const mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
-
-		const targetGunRad = Phaser.Math.Angle.Between(
-			this.gun.x, this.gun.y,
-			mouseWorldX, mouseWorldY
-		)
-
-		this.mouseGunAngle = Phaser.Math.RadToDeg(targetGunRad);
-		this.gun.angle = this.mouseGunAngle;
-
+		this.handleArmAngle();
 		if (this.jumpObj.isDown === true || !this.onGround) { //Jump pressed/inAir
 			this.handleMainCharacterJump();
 		}
 		if (!this.onGround) {
-			if (this.dir === 'left') {
-				this.character.setOffset(10,10);
-				this.gun.x = this.character.x + 10;
+			if (this.dir === 'right') {
+				this.character.setOffset(24, 0 );
+				this.arm.x = this.character.x - 3;
 			} else {
-				this.character.setOffset(0,10);
-				this.gun.x = this.character.x - 10;
+				this.character.setOffset(24, 0 );
+				this.arm.x = this.character.x + 5;
 			}
 		}
 
@@ -66,7 +60,7 @@ export default class characterController {
 				this.dx = 7;
 			} else { //On ground right move
 				this.character.setOffset(43, -5);
-				this.gun.x = this.character.x + 10;
+				this.arm.x = this.character.x + 10;
 				if (this.curAnim !== 'run') {
 					this.curAnim = 'run';
 					this.character.play('run');
@@ -80,7 +74,7 @@ export default class characterController {
 				this.dx = -7;
 			} else { //On ground left move
 				this.character.setOffset(31, -5);
-				this.gun.x = this.character.x - 10;
+				this.arm.x = this.character.x - 10;
 				if (this.curAnim !== 'run') {
 					this.curAnim = 'run';
 					this.character.play('run');
@@ -94,19 +88,19 @@ export default class characterController {
 				this.character.setOffset(-5,-4);
 				this.curAnim = 'idle';
 				if (this.dir === 'right') {
-					this.gun.x = this.character.x + this.armPos[0];
+					this.arm.x = this.character.x + this.armPos[0];
 				} else {
-					this.gun.x = this.character.x + this.armPos[19];
+					this.arm.x = this.character.x + this.armPos[19];
 				}
 			} else if (this.onGround){ //Anim idle setup
 				var curFrame = this.character.anims.currentFrame;
 				if (curFrame) {
 					if (this.dir === 'right') {
 						var offset = 5;
-						this.gun.x =  this.character.x + this.armPos[curFrame.index-1] + offset;
+						this.arm.x =  this.character.x + this.armPos[curFrame.index-1] + offset;
 					} else { // character is facing left
 						var offset = 3;
-						this.gun.x =  this.character.x - this.armPos[curFrame.index-1] - offset;
+						this.arm.x =  this.character.x - this.armPos[curFrame.index-1] - offset;
 					}
 				}
 			}
@@ -128,10 +122,15 @@ export default class characterController {
 			this.onGround = false;
 			this.curAnim = 'fall';
 			this.character.play('fall')
+			this.character.anims.pause();
+
 		} else if (this.pos.y + this.dy <= this.scene.gameHeight - 70) {
-			if (this.dy < -1 ) {
+			if (this.dy < -1 ) { //Going up
 				this.dy *= this.g;
-			} else {
+			} else { //Going down
+				if (this.character.anims.currentFrame.index === 1) {
+					this.character.anims.nextFrame();
+				}
 				this.dy = Math.abs(this.dy /= this.g);
 			}
 		} else {
@@ -144,7 +143,8 @@ export default class characterController {
 
 	setMainCharacterPos() { // ------- Char pos
 		this.character.y = this.pos.y;
-		this.gun.y = this.pos.y - 35;
+		this.arm.y = this.pos.y - 35;
+		this.handleArmAngle();
 	}
 
 	createAnimations() {
@@ -167,7 +167,7 @@ export default class characterController {
 			frames: this.character.anims.generateFrameNames('player', {
 					prefix: 'idle/idle_',
 					start: 0,
-					end: 29,
+					end: 19,
 					zeroPad: 2,
 					suffix: '.png'
 			}),
@@ -204,15 +204,52 @@ export default class characterController {
 	this.character.anims.create({
 		key: 'fall',
 		frames: this.character.anims.generateFrameNames('player', {
-				prefix: 'inAir/inAir_',
+				prefix: 'inAir/player-InAir_',
 				start: 0,
-				end: 9,
-				zeroPad: 2,
+				end: 1,
+				zeroPad: 1,
 				suffix: '.png'
 		}),
 		frameRate: 20,
 		repeat: -1
 	});
+	}
+
+	handleArmAngle() {
+		const mouseWorldX = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).x;
+		const mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
+
+
+		const targetArmRad = Phaser.Math.Angle.Between(
+			this.arm.x, this.arm.y,
+			mouseWorldX, mouseWorldY
+		)
+		const targetForearmRad = Phaser.Math.Angle.Between(
+			this.forearm.x, this.forearm.y,
+			mouseWorldX, mouseWorldY
+		)
+		var mouseArmAngle = Phaser.Math.RadToDeg(targetArmRad);
+		var mouseForearmAngle = Phaser.Math.RadToDeg(targetForearmRad);
+		this.arm.angle = mouseArmAngle;
+		this.forearm.angle = mouseForearmAngle
+
+		var yPosOffset = 2;
+
+		if (this.dir === 'right') {
+			this.arm.setScale(.2,.2);
+			this.forearm.setScale(.2,.2);
+		} else {
+			var yPosOffset = -2;
+			this.arm.setScale(.2,-.2);
+			this.forearm.setScale(.2,-.2);
+		}
+
+		var radAng = this.arm.angle*Math.PI/180;
+		var x = this.arm.x + 25*Math.cos(radAng) - yPosOffset*Math.sin(radAng);
+		var y = this.arm.y + 25*Math.sin(radAng) + yPosOffset*Math.cos(radAng);
+		this.forearm.x = x;
+		this.forearm.y = y;
+
 	}
 
 }
