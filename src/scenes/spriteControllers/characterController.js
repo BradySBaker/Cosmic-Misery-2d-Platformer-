@@ -3,7 +3,8 @@ export default class characterController {
     this.scene = scene;
   }
 
-	createMainCharacter() { // ------- Creating main acter
+
+	createMainCharacter() { // ------- Creating main character
 		this.onGround = true;
 		this.dx = 0;
 		this.g = .95;
@@ -11,44 +12,36 @@ export default class characterController {
 		this.dir = 'right';
 		this.pos = {x: 100, y: this.scene.gameHeight - 70}
 
-		this.curAnim = '';
+		this.runArmPos = {x: [15, 15, 13, 12, 13, 14, 14, 16, 18, 16, 13, 11, 11, 12, 13, 14], y: [-30, -28, -28, -30, -33, -37, -38, -39, -37, -37, -38, -41, -43, -41, -40, -36]};
+		this.idleArmPos = [-22, -21, -20, -19, -16, -12, -8, -5, -3, -1, -1, -3, -5, -8, -9, -12, -14, -16, -18, -20];
 
+		this.curAnim = '';
 		this.character = this.scene.physics.add.sprite(this.pos.x, this.pos.y, 'player');
 		this.character.setBodySize(50, 150);
+
 		this.createAnimations();
 
 		this.character.body.setCollideWorldBounds(false);
 		this.character.body.setAllowGravity(false);
 
 		this.character.setOrigin(1, 1);
-		this.gun = this.scene.add.rectangle(this.character.x, this.pos.y - 60, 40, 5, 0xffffff, 1);
-		this.gun.setOrigin(0, 0);
+
+		this.arm = this.scene.add.image(this.character.x, this.pos.y - 35, 'playerArm')
+		this.forearm = this.scene.add.image(this.arm.x, this.arm.y, 'playerForearm');
+		this.arm.setScale(.2);
+		this.forearm.setScale(.2);
+		this.forearm.setOrigin(0,0);
+		this.arm.setOrigin(0, .5);
     this.shootTimer = 0;
 	}
 
   handleMainCharacter() { // ------ Main character movement/events
-		const mouseWorldX = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).x;
-		const mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
-
-		const targetGunRad = Phaser.Math.Angle.Between(
-			this.gun.x, this.gun.y,
-			mouseWorldX, mouseWorldY
-		)
-
-		this.mouseGunAngle = Phaser.Math.RadToDeg(targetGunRad);
-		this.gun.angle = this.mouseGunAngle;
-
 		if (this.jumpObj.isDown === true || !this.onGround) { //Jump pressed/inAir
 			this.handleMainCharacterJump();
 		}
 		if (!this.onGround) {
-			if (this.dir === 'left') {
-				this.character.setOffset(10,10);
-				this.gun.x = this.character.x + 10;
-			} else {
-				this.character.setOffset(0,10);
-				this.gun.x = this.character.x - 10;
-			}
+				this.character.setOffset(24, 0 );
+				this.arm.x = this.character.x - 3;
 		}
 
 		var moved = false;
@@ -62,7 +55,6 @@ export default class characterController {
 				this.dx = 7;
 			} else { //On ground right move
 				this.character.setOffset(43, -5);
-				this.gun.x = this.character.x + 10;
 				if (this.curAnim !== 'run') {
 					this.curAnim = 'run';
 					this.character.play('run');
@@ -76,7 +68,6 @@ export default class characterController {
 				this.dx = -7;
 			} else { //On ground left move
 				this.character.setOffset(31, -5);
-				this.gun.x = this.character.x - 10;
 				if (this.curAnim !== 'run') {
 					this.curAnim = 'run';
 					this.character.play('run');
@@ -90,26 +81,9 @@ export default class characterController {
 				this.character.setOffset(-5,-4);
 				this.curAnim = 'idle';
 				if (this.dir === 'right') {
-					this.gun.x = this.character.x -3;
+					this.arm.x = this.character.x + this.idleArmPos[0];
 				} else {
-					this.gun.x = this.character.x + 3;
-				}
-			} else if (this.onGround){ //Anim idle setup
-				var curFrame = this.character.anims.currentFrame;
-				if (curFrame) {
-					if (this.dir === 'right') {
-						if (curFrame.index > 10 && this.gun.x > this.character.x - 10) {
-							this.gun.x -= .4;
-						} else if (this.gun.x < this.character.x + 15 && curFrame.index > 2) {
-							this.gun.x += .4;
-						}
-					} else { // character is facing left
-						if (curFrame.index > 10 && this.gun.x < this.character.x + 10) {
-							this.gun.x += .4;
-						} else if (this.gun.x > this.character.x - 15 && curFrame.index > 2) {
-							this.gun.x -= .4;
-						}
-					}
+					this.arm.x = this.character.x + this.idleArmPos[19];
 				}
 			}
 			this.dx = 0;
@@ -130,10 +104,15 @@ export default class characterController {
 			this.onGround = false;
 			this.curAnim = 'fall';
 			this.character.play('fall')
+			this.character.anims.pause();
+
 		} else if (this.pos.y + this.dy <= this.scene.gameHeight - 70) {
-			if (this.dy < -1 ) {
+			if (this.dy < -1 ) { //Going up
 				this.dy *= this.g;
-			} else {
+			} else { //Going down
+				if (this.character.anims.currentFrame.index === 1) {
+					this.character.anims.nextFrame();
+				}
 				this.dy = Math.abs(this.dy /= this.g);
 			}
 		} else {
@@ -146,7 +125,10 @@ export default class characterController {
 
 	setMainCharacterPos() { // ------- Char pos
 		this.character.y = this.pos.y;
-		this.gun.y = this.pos.y - 30;
+
+		this.arm.y = this.pos.y - 38;
+		this.handleArmPos();
+		this.handleArmAngle();
 	}
 
 	createAnimations() {
@@ -162,6 +144,7 @@ export default class characterController {
 			frameRate: 20,
 			repeat: -1
 	});
+
 
 		this.character.anims.create({
 			key: 'idle',
@@ -190,6 +173,19 @@ export default class characterController {
 });
 
 	this.character.anims.create({
+		key: 'fall',
+		frames: this.character.anims.generateFrameNames('player', {
+				prefix: 'inAir/player-InAir_',
+				start: 0,
+				end: 1,
+				zeroPad: 1,
+				suffix: '.png'
+		}),
+		frameRate: 20,
+		repeat: -1
+	});
+
+	this.character.anims.create({
 		key: 'run',
 		frames: this.character.anims.generateFrameNames('player', {
 				prefix: 'run/run_',
@@ -201,19 +197,67 @@ export default class characterController {
 		frameRate: 20,
 		repeat: -1
 	});
-
-	this.character.anims.create({
-		key: 'fall',
-		frames: this.character.anims.generateFrameNames('player', {
-				prefix: 'inAir/inAir_',
-				start: 0,
-				end: 9,
-				zeroPad: 2,
-				suffix: '.png'
-		}),
-		frameRate: 20,
-		repeat: -1
-	});
 	}
 
+	handleArmPos(string) {
+		var curFrame = this.character.anims.currentFrame;
+		var idleOffset = 3;
+		var runOffset = {x: 8, y: 2};
+		if (curFrame) {
+			if (this.dir === 'right') {
+				if (this.curAnim === 'idle') {
+					this.arm.x =  this.character.x + this.idleArmPos[curFrame.index-1] + idleOffset;
+				} else if (this.curAnim === 'run') {
+					this.arm.x =  this.character.x + this.runArmPos.x[curFrame.index-1] - runOffset.x;
+					this.arm.y = this.character.y + this.runArmPos.y[curFrame.index-1] + runOffset.y;
+				}
+			} else { // character is facing left
+				if (this.curAnim === 'idle') {
+					this.arm.x =  this.character.x - this.idleArmPos[curFrame.index-1] - idleOffset;
+				} else if(this.curAnim === 'run') {
+					this.arm.x = this.character.x - this.runArmPos.x[curFrame.index-1] + runOffset.x;
+					this.arm.y = this.character.y + this.runArmPos.y[curFrame.index-1] + runOffset.y;
+				}
+			}
+		}
+	}
+
+
+
+	handleArmAngle() {
+		const mouseWorldX = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).x;
+		const mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
+
+
+		const targetArmRad = Phaser.Math.Angle.Between(
+			this.arm.x, this.arm.y,
+			mouseWorldX, mouseWorldY
+		)
+		const targetForearmRad = Phaser.Math.Angle.Between(
+			this.forearm.x, this.forearm.y,
+			mouseWorldX, mouseWorldY
+		)
+		var mouseArmAngle = Phaser.Math.RadToDeg(targetArmRad);
+		var mouseForearmAngle = Phaser.Math.RadToDeg(targetForearmRad);
+		this.arm.angle = mouseArmAngle;
+		this.forearm.angle = mouseForearmAngle
+
+		var yPosOffset = -1;
+
+		if (this.dir === 'right') {
+			this.arm.setScale(.2,.2);
+			this.forearm.setScale(.2,.2);
+		} else {
+			var yPosOffset = 2;
+			this.arm.setScale(.2,-.2);
+			this.forearm.setScale(.2,-.2);
+		}
+
+		var radAng = this.arm.angle*Math.PI/180;
+		var x = this.arm.x + 25*Math.cos(radAng) - yPosOffset*Math.sin(radAng);
+		var y = this.arm.y + 25*Math.sin(radAng) + yPosOffset*Math.cos(radAng);
+		this.forearm.x = x;
+		this.forearm.y = y;
+
+	}
 }

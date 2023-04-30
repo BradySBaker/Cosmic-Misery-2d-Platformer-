@@ -8,6 +8,8 @@ export default class Game extends Phaser.Scene {
 		this.load.image('mountains1', '..//assets/mountains1.png');
 		this.load.image('mountains2', '..//assets/mountains2.png');
 		this.load.atlas('player', '..//assets/player/player.png', '..//assets/player/player.json', true);
+		this.load.image('playerArm', '..//assets/player/lArm.png');
+		this.load.image('playerForearm', '..//assets/player/lForearm.png');
 	}
 
 	create() {
@@ -115,9 +117,9 @@ if (this.physics.world.isPaused) {
 	}
 
 	createProjectile() { // ------------ Projectile
-		var radAng = this.char.gun.angle*Math.PI/180;
-		var x = this.char.gun.x + 40*Math.cos(radAng) - 5*Math.sin(radAng);
-		var y = this.char.gun.y + 40*Math.sin(radAng) + 5*Math.cos(radAng);
+		var radAng = this.char.forearm.angle*Math.PI/180;
+		var x = this.char.forearm.x + 20*Math.cos(radAng) - 1*Math.sin(radAng);
+		var y = this.char.forearm.y + 20*Math.sin(radAng) + 1*Math.cos(radAng);
 		var curCircle;
 		curCircle = this.add.circle(x, y, 5, 0xffffff, 1);
 		this.projectileGroup.add(curCircle);
