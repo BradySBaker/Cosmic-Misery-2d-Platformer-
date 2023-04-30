@@ -3,7 +3,8 @@ export default class characterController {
     this.scene = scene;
   }
 
-	createMainCharacter() { // ------- Creating main acter
+
+	createMainCharacter() { // ------- Creating main character
 		this.onGround = true;
 		this.dx = 0;
 		this.g = .95;
@@ -11,17 +12,20 @@ export default class characterController {
 		this.dir = 'right';
 		this.pos = {x: 100, y: this.scene.gameHeight - 70}
 
-		this.curAnim = '';
+		this.armPos = [-22, -21, -20, -19, -16, -12, -8, -5, -3, -1, -1, -3, -5, -8, -9, -12, -14, -16, -18, -20];
 
+		this.curAnim = '';
 		this.character = this.scene.physics.add.sprite(this.pos.x, this.pos.y, 'player');
 		this.character.setBodySize(50, 150);
+
 		this.createAnimations();
 
 		this.character.body.setCollideWorldBounds(false);
 		this.character.body.setAllowGravity(false);
 
 		this.character.setOrigin(1, 1);
-		this.gun = this.scene.add.rectangle(this.character.x, this.pos.y - 60, 40, 5, 0xffffff, 1);
+		this.gun = this.scene.add.rectangle(this.character.x, this.pos.y - 35, 40, 5, 0xffffff, 1);
+
 		this.gun.setOrigin(0, 0);
     this.shootTimer = 0;
 	}
@@ -90,25 +94,19 @@ export default class characterController {
 				this.character.setOffset(-5,-4);
 				this.curAnim = 'idle';
 				if (this.dir === 'right') {
-					this.gun.x = this.character.x -3;
+					this.gun.x = this.character.x + this.armPos[0];
 				} else {
-					this.gun.x = this.character.x + 3;
+					this.gun.x = this.character.x + this.armPos[19];
 				}
 			} else if (this.onGround){ //Anim idle setup
 				var curFrame = this.character.anims.currentFrame;
 				if (curFrame) {
 					if (this.dir === 'right') {
-						if (curFrame.index > 10 && this.gun.x > this.character.x - 10) {
-							this.gun.x -= .4;
-						} else if (this.gun.x < this.character.x + 15 && curFrame.index > 2) {
-							this.gun.x += .4;
-						}
+						var offset = 5;
+						this.gun.x =  this.character.x + this.armPos[curFrame.index-1] + offset;
 					} else { // character is facing left
-						if (curFrame.index > 10 && this.gun.x < this.character.x + 10) {
-							this.gun.x += .4;
-						} else if (this.gun.x > this.character.x - 15 && curFrame.index > 2) {
-							this.gun.x -= .4;
-						}
+						var offset = 3;
+						this.gun.x =  this.character.x - this.armPos[curFrame.index-1] - offset;
 					}
 				}
 			}
@@ -146,7 +144,7 @@ export default class characterController {
 
 	setMainCharacterPos() { // ------- Char pos
 		this.character.y = this.pos.y;
-		this.gun.y = this.pos.y - 30;
+		this.gun.y = this.pos.y - 35;
 	}
 
 	createAnimations() {
@@ -163,12 +161,13 @@ export default class characterController {
 			repeat: -1
 	});
 
+
 		this.character.anims.create({
 			key: 'idle',
 			frames: this.character.anims.generateFrameNames('player', {
 					prefix: 'idle/idle_',
 					start: 0,
-					end: 19,
+					end: 29,
 					zeroPad: 2,
 					suffix: '.png'
 			}),
