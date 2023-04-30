@@ -80,7 +80,7 @@ export default class Game extends Phaser.Scene {
 
 
 this.cameras.main.startFollow(this.char.character, true, 0.5, 0.5, 0, 0);
-// this.enemySpawner();
+this.enemySpawner();
 
 if (this.physics.world.isPaused) {
 	this.physics.resume();
@@ -90,9 +90,9 @@ if (this.physics.world.isPaused) {
 	update() {
 		this.gameObjectsGroup.children.iterate((gameObject) => {
 			if (gameObject.name === 'enemy' && this.char.onGround) {
-				if (gameObject.x < this.char.character.x) {
+				if (gameObject.x < this.char.character.x && gameObject.body) {
 					gameObject.body.setVelocityX(100);
-				} else {
+				} else if(gameObject.body){
 					gameObject.body.setVelocityX(-100);
 				}
 			}
@@ -118,8 +118,8 @@ if (this.physics.world.isPaused) {
 
 	createProjectile() { // ------------ Projectile
 		var radAng = this.char.forearm.angle*Math.PI/180;
-		var x = this.char.forearm.x + 20*Math.cos(radAng) - 1*Math.sin(radAng);
-		var y = this.char.forearm.y + 20*Math.sin(radAng) + 1*Math.cos(radAng);
+		var x = this.char.forearm.x + 40*Math.cos(radAng) - 1*Math.sin(radAng);
+		var y = this.char.forearm.y + 40*Math.sin(radAng) + 1*Math.cos(radAng);
 		var curCircle;
 		curCircle = this.add.circle(x, y, 5, 0xffffff, 1);
 		this.projectileGroup.add(curCircle);

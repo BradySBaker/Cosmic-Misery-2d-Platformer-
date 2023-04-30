@@ -229,7 +229,7 @@ export default class characterController {
 		const mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
 
 
-		const targetArmRad = Phaser.Math.Angle.Between(
+		var targetArmRad = Phaser.Math.Angle.Between(
 			this.arm.x, this.arm.y,
 			mouseWorldX, mouseWorldY
 		)
@@ -237,11 +237,19 @@ export default class characterController {
 			this.forearm.x, this.forearm.y,
 			mouseWorldX, mouseWorldY
 		)
-		var mouseArmAngle = Phaser.Math.RadToDeg(targetArmRad);
+		var radAng = this.arm.angle*Math.PI/180;
+
+		if (targetArmRad < -Math.PI/2 && radAng > 0) {
+			targetArmRad += Math.PI*2;
+		} else if (targetArmRad > Math.PI/2 && radAng < 0) {
+				targetArmRad -= Math.PI*2;
+		}
+
+		const interpolatedArmRad = Phaser.Math.Interpolation.Bezier([radAng, targetArmRad], .07);
+		var mouseArmAngle = Phaser.Math.RadToDeg(interpolatedArmRad);
 		var mouseForearmAngle = Phaser.Math.RadToDeg(targetForearmRad);
 		this.arm.angle = mouseArmAngle;
 		this.forearm.angle = mouseForearmAngle
-
 		var yPosOffset = -1;
 
 		if (this.dir === 'right') {
@@ -252,8 +260,6 @@ export default class characterController {
 			this.arm.setScale(.2,-.2);
 			this.forearm.setScale(.2,-.2);
 		}
-
-		var radAng = this.arm.angle*Math.PI/180;
 		var x = this.arm.x + 25*Math.cos(radAng) - yPosOffset*Math.sin(radAng);
 		var y = this.arm.y + 25*Math.sin(radAng) + yPosOffset*Math.cos(radAng);
 		this.forearm.x = x;
