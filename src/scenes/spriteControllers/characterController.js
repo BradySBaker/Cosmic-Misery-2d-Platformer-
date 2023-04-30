@@ -238,15 +238,19 @@ export default class characterController {
 			mouseWorldX, mouseWorldY
 		)
 		var radAng = this.arm.angle*Math.PI/180;
-
 		if (targetArmRad < -Math.PI/2 && radAng > 0) {
 			targetArmRad += Math.PI*2;
 		} else if (targetArmRad > Math.PI/2 && radAng < 0) {
 				targetArmRad -= Math.PI*2;
 		}
+		var mouseArmAngle;
+		if (radAng < targetArmRad) { //If arm going down
+			mouseArmAngle = Phaser.Math.RadToDeg(targetArmRad);
+		} else { //If arm going up
+			const interpolatedArmRad = Phaser.Math.Interpolation.Bezier([radAng, targetArmRad], .07);
+			mouseArmAngle = Phaser.Math.RadToDeg(interpolatedArmRad);
+		}
 
-		const interpolatedArmRad = Phaser.Math.Interpolation.Bezier([radAng, targetArmRad], .07);
-		var mouseArmAngle = Phaser.Math.RadToDeg(interpolatedArmRad);
 		var mouseForearmAngle = Phaser.Math.RadToDeg(targetForearmRad);
 		this.arm.angle = mouseArmAngle;
 		this.forearm.angle = mouseForearmAngle
