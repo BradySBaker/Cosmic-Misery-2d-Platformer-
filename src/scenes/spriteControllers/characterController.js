@@ -25,7 +25,9 @@ export default class characterController {
     this.shootTimer = 0;
 	}
 
+
   handleMainCharacter() { // ------ Main character movement/events      =====[Function]========
+
 		if (this.jumpObj.isDown === true || !this.onGround) { //Jump pressed/inAir
 			this.handleCharacterJump();
 		}
@@ -34,7 +36,6 @@ export default class characterController {
 		if (this.shootTimer > 0) {
 			this.shootTimer--;
 		}
-
 		if (this.moveRObj.isDown || this.moveLObj.isDown) {
 			this.movement.dx = 5;
 			if (!this.onGround) {
@@ -66,13 +67,23 @@ export default class characterController {
 			}
 			this.movement.dx = 0;
 		}
-
 		if (this.scene.input.activePointer.isDown && this.shootTimer === 0) {
-			this.shootTimer = 20;
-			this.scene.createProjectile();
+			if (this.scene.mobile) {
+				var pointer = this.getNonJoyStickMobilePointer();
+				if (pointer.isDown) {
+					this.shootProjectile();
+				}
+			} else { //Not mobile
+				this.shootProjectile()
+			}
 		}
 
 		this.setCharacterPos();
+	}
+
+	shootProjectile() {
+		this.shootTimer = 20;
+		this.scene.createProjectile();
 	}
 
   handleCharacterJump() { // ------ Main character jump          ========[Function]========
@@ -101,6 +112,18 @@ export default class characterController {
 		}
 	}
 
+
+	getNonJoyStickMobilePointer() { //Handles getting the pointer that is not the joystick pointer
+		var pointer1 = this.scene.input.pointer1;
+		var pointer2 = this.scene.input.pointer2;
+		if (pointer1 === this.scene.joystick.pointer) {
+			return pointer2;
+		} else if (pointer2 === this.scene.joystick.pointer) {
+			return pointer1;
+		} else {
+			return pointer1;
+		}
+	}
 
 	setCharacterPos() { // ------- Char pos                 =======[Function]=======
 		this.movement.dx = this.movement.dir === 'right' ? this.movement.dx : -this.movement.dx;
@@ -141,8 +164,14 @@ export default class characterController {
 
 
 	handleArmAngle() {//Sets arm angle based on mouse									========[Function]===========
-		const mouseWorldX = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).x;
-		const mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
+		var mouseWorldX = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).x;
+		var mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
+		if (this.scene.mobile) {
+			var pointer = this.getNonJoyStickMobilePointer();
+			mouseWorldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
+			mouseWorldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+		}
+
 
 
 		var targetArmRad = Phaser.Math.Angle.Between(
