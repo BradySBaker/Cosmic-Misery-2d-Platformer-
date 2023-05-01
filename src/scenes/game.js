@@ -14,6 +14,8 @@ export default class Game extends Phaser.Scene {
 	}
 
 	create() {
+		this.input.addPointer(2);
+
 		this.death = false;
 		this.char = new CharacterController(this);
 
@@ -32,9 +34,8 @@ export default class Game extends Phaser.Scene {
     this.gameHeight = 400;
 		const graphics = this.add.graphics();
 
-		var isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-		this.add.text(100, 300,navigator.userAgent);
-		if (!isMobile) {
+		if (/Mobi/.test(navigator.userAgent)) {
+			this.mobile = true;
 			this.setupJoystick();
 		}
 
@@ -179,7 +180,7 @@ if (this.physics.world.isPaused) {
 			thumb.fillStyle(0x837d7d, .5);
 			thumb.fillCircle(0, 0, 25);
 
-		var joystick = this.plugins.get('VirtualJoystick').add(this, {
+		this.joystick = this.plugins.get('VirtualJoystick').add(this, {
 			x: 200,
 			y: this.gameHeight + 50,
 			radius: 50,
@@ -189,7 +190,7 @@ if (this.physics.world.isPaused) {
 			enable: true
 		});
 
-		var cursorKeys = joystick.createCursorKeys();
+		var cursorKeys = this.joystick.createCursorKeys();
 
 		this.char.moveRObj = cursorKeys.right;
 		this.char.moveLObj = cursorKeys.left;

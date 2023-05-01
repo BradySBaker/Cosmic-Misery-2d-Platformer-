@@ -1,12 +1,10 @@
 body {
+  height: 100vh;
   background-color: #2c003e;
-}
-
-canvas {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  overflow: hidden;
 }
 
 #death {
