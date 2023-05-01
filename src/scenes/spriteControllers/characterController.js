@@ -34,7 +34,6 @@ export default class characterController {
 		if (this.shootTimer > 0) {
 			this.shootTimer--;
 		}
-		console.log(this.moveRObj);
 		if (this.moveRObj.isDown || this.moveLObj.isDown) {
 			this.movement.dx = 5;
 			if (!this.onGround) {

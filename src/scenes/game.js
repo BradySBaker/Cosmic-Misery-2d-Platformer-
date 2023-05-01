@@ -33,7 +33,8 @@ export default class Game extends Phaser.Scene {
 		const graphics = this.add.graphics();
 
 		var isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-		if (isMobile) {
+		this.add.text(100, 300,navigator.userAgent);
+		if (!isMobile) {
 			this.setupJoystick();
 		}
 
