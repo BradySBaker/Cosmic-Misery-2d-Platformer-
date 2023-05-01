@@ -35,37 +35,6 @@ export default class characterController {
 			this.shootTimer--;
 		}
 
-
-
-		/*
-				if (this.moveRObj.isDown) { //D key
-			this.movement.dir = 'right';
-			this.character.flipX = false;
-			if (!this.onGround) {
-				this.movement.dx = 7;
-			} else { //On ground right move
-				this.character.setOffset(43, -5);
-				if (this.curAnim !== 'run') {
-					this.curAnim = 'run';
-					this.character.play('run');
-				}
-				this.movement.dx = 5;
-			}
-		} else if (this.moveLObj.isDown) { //A key
-			this.movement.dir = 'left';
-			this.character.flipX = true;
-			if (!this.onGround) {
-				this.movement.dx = -7;
-			} else { //On ground left move
-				this.character.setOffset(31, -5);
-				if (this.curAnim !== 'run') {
-					this.curAnim = 'run';
-					this.character.play('run');
-
-				}
-				this.movement.dx = -5;
-			}
-		}  */
 		if (this.moveRObj.isDown || this.moveLObj.isDown) {
 			this.movement.dx = 5;
 			if (!this.onGround) {
@@ -76,13 +45,13 @@ export default class characterController {
 					this.character.play('run');
 				}
 			}
-			if (this.moveRObj.isDown) {
+			if (this.moveRObj.isDown) { //Right Press
 				if (this.onGround) {
 					this.character.setOffset(43, -5);
 				}
 				this.movement.dir = 'right';
 				this.character.flipX = false;
-			} else if (this.moveLObj.isDown) {
+			} else if (this.moveLObj.isDown) { //Left Press
 				if (this.onGround) {
 					this.character.setOffset(31, -5);
 				}
@@ -94,11 +63,6 @@ export default class characterController {
 				this.character.play('idle');
 				this.character.setOffset(-5,-4);
 				this.curAnim = 'idle';
-				if (this.movement.dir === 'right') {
-					this.arm.x = this.character.x + this.idleArmPos[0];
-				} else {
-					this.arm.x = this.character.x + this.idleArmPos[19];
-				}
 			}
 			this.movement.dx = 0;
 		}
