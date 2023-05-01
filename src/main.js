@@ -1,5 +1,7 @@
 import Phaser from "phaser";
 import Game from "./scenes/game";
+import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
+
 
 const config = {
 	width: 945,
@@ -12,6 +14,10 @@ const config = {
 			gravity: { y: 1000 },
 			debug: true
 		}
+	},
+	plugins:{
+		global: [
+			{key: 'VirtualJoystick', plugin: VirtualJoystickPlugin, start: true}]
 	}
 }
 

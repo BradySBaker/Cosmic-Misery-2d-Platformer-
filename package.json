@@ -12,6 +12,7 @@
   "dependencies": {
     "parcel": "^2.8.3",
     "phaser": "^3.60.0",
+    "phaser3-rex-plugins": "^1.60.0",
     "save": "^2.9.0"
   },
   "devDependencies": {
