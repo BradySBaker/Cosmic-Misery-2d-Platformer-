@@ -13,6 +13,7 @@ export default class Game extends Phaser.Scene {
 	}
 
 	create() {
+		this.death = false;
 
 		this.backgrounds = [];
 
@@ -33,7 +34,6 @@ export default class Game extends Phaser.Scene {
 			.setOrigin(0,0)
 			.setScrollFactor(0, 1)
 		})
-
 		this.backgrounds.push({
 			ratioX: 1,
 			sprite: this.add.tileSprite(0, 0, 945, 450, 'ground')
@@ -74,6 +74,11 @@ export default class Game extends Phaser.Scene {
 	});
 	this.enemyTimer = 1000;
 
+
+	this.physics.add.overlap(this.char.character, this.enemyGroup, () => {
+		this.gameOver();
+		this.death = true;
+	});
 	this.physics.add.overlap(this.projectileGroup, this.enemyGroup, (circle, enemy) => {
     enemy.destroy();
 	});
@@ -88,6 +93,10 @@ if (this.physics.world.isPaused) {
 }
 
 	update() {
+		if (this.death) {
+			return;
+		}
+
 		this.gameObjectsGroup.children.iterate((gameObject) => {
 			if (gameObject.name === 'enemy' && this.char.onGround) {
 				if (gameObject.x < this.char.character.x && gameObject.body) {
@@ -102,7 +111,6 @@ if (this.physics.world.isPaused) {
 				gameObject.x -= this.char.dx;
 			}
 		});
-
 		this.char.handleMainCharacter();
 		this.handleBackgrounds();
 	}
@@ -132,8 +140,9 @@ if (this.physics.world.isPaused) {
 	}
 
 	enemySpawner() {
-
-		this.createEnemy();
+		if (!this.death) {
+			this.createEnemy();
+		}
 		setTimeout(() => {this.enemySpawner()}, this.enemyTimer);
 	}
 
@@ -146,4 +155,32 @@ if (this.physics.world.isPaused) {
 		}
 	}
 
+
+	gameOver() {
+		if (!this.death) {
+			const menu = document.createElement("div");
+
+			const deathMessage = document.createElement("p1");
+			deathMessage.innerHTML = 'You Died';
+
+			const button = document.createElement("button")
+			menu.append(deathMessage, button);
+			menu.id = "death";
+			button.innerHTML = "START";
+
+			document.body.appendChild(menu);
+			const game = this;
+			button.addEventListener("click", () => restart(menu, game));
+
+			this.physics.world.timeScale = 2
+			this.char.arm.visible = false;
+			this.char.forearm.visible = false;
+			this.char.character.play('death');
+		}
+	}
+}
+
+var restart = (e, game) => {
+	e.remove();
+	game.scene.restart();
 }

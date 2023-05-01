@@ -10,7 +10,7 @@ export default class characterController {
 		this.g = .95;
 		this.dy = 0;
 		this.dir = 'right';
-		this.pos = {x: 100, y: this.scene.gameHeight - 70}
+		this.pos = {x: 100, y: this.scene.gameHeight - 70};
 
 		this.runArmPos = {x: [15, 15, 13, 12, 13, 14, 14, 16, 18, 16, 13, 11, 11, 12, 13, 14], y: [-30, -28, -28, -30, -33, -37, -38, -39, -37, -37, -38, -41, -43, -41, -40, -36]};
 		this.idleArmPos = [-22, -21, -20, -19, -16, -12, -8, -5, -3, -1, -1, -3, -5, -8, -9, -12, -14, -16, -18, -20];
@@ -142,7 +142,7 @@ export default class characterController {
 					suffix: '.png'
 			}),
 			frameRate: 20,
-			repeat: -1
+			repeat: 0
 	});
 
 
@@ -268,6 +268,5 @@ export default class characterController {
 		var y = this.arm.y + 25*Math.sin(radAng) + yPosOffset*Math.cos(radAng);
 		this.forearm.x = x;
 		this.forearm.y = y;
-
 	}
 }

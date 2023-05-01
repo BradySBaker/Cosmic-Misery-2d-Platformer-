@@ -8,3 +8,47 @@ canvas {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+#death {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	width: 70%;
+	max-width: 700px;
+	background-color: rgba(0, 0, 0, 0.375);
+  left: 50%;
+  top: 30%;
+  transform: translateX(-50%);
+
+	border-radius: 20px;
+}
+
+#death button {
+	width: 20vw;
+	height: 8vw;
+	position: relative;
+	font-size: 3vw;
+	font-weight: bold;
+	color: rgb(255, 255, 255);
+	background-color: red;
+	border-radius: 10px;
+}
+
+#death button:hover {
+	animation: button 1s forwards;
+}
+
+@keyframes button {
+	to {
+		background-color: #2c003e;
+		color: rgb(138, 255, 122);
+	}
+}
+
+#death p1 {
+	font-size: 9vw;
+	font-weight: bold;
+	color: red;
+}
