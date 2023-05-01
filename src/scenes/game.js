@@ -106,9 +106,9 @@ if (this.physics.world.isPaused) {
 				}
 			}
 			if (gameObject.name === 'projectile') {
-				gameObject.body.setVelocityX(gameObject.body.velocity.x - this.char.dx);
+				gameObject.body.setVelocityX(gameObject.body.velocity.x - this.char.movement.dx);
 			} else {
-				gameObject.x -= this.char.dx;
+				gameObject.x -= this.char.movement.dx;
 			}
 		});
 		this.char.handleMainCharacter();
@@ -151,7 +151,7 @@ if (this.physics.world.isPaused) {
 		for (let i =0 ; i< this.backgrounds.length; i++) {
 			const bg = this.backgrounds[i];
 
-			bg.sprite.tilePositionX = this.char.pos.x * bg.ratioX;
+			bg.sprite.tilePositionX = this.char.movement.pos.x * bg.ratioX;
 		}
 	}
 
