@@ -53,7 +53,6 @@ export default class Game extends Phaser.Scene {
 					// configure physics properties of the circle
 					projectile.body.setBounce(1);
 					gameObjectsGroup.add(projectile);
-					projectile.body.setCollideWorldBounds(true, .5, .5);
 			}
 	});
 
@@ -62,8 +61,10 @@ export default class Game extends Phaser.Scene {
 	this.setupPlatforms(gameObjectsGroup);
 	this.prevGameObjX = 100;
 	this.nextPlatformX = 100;
-	this.nextHole = 0;
-	this.prevGround = 0;
+	this.nextHole = 1000;
+	this.holeWidth = 200;
+	this.prevGround = -(this.nextHole - this.holeWidth);
+	this.groundHandler(true);
 
 	this.physics.add.collider(this.platformGroup, this.projectileGroup);
 	this.physics.add.overlap(this.char.character, this.enemy1Controller.enemyGroup, () => {
@@ -230,11 +231,10 @@ if (this.physics.world.isPaused) {
 				lowest = key;
 			}
 		}
-		console.log(lowest);
 		this.char.c[lowest] = true;
 	}
 
-	}
+}
 
 
 	randomPlatformSpawner() {
@@ -246,11 +246,22 @@ if (this.physics.world.isPaused) {
 		// }
 	}
 
-	groundHandler() {
-		if (this.char.movement.pos.x - this.prevGround > this.nextHole/2) {
-			this.nextHole = Phaser.Math.Between(300, 700);
-			this.prevGround = this.char.movement.pos.x;
-			var platform = this.add.rectangle(this.char.movement.pos.x, 422, this.nextHole, 58, 0xfffff, 1);
+	groundHandler(first) {
+		if (this.char.movement.pos.x - this.prevGround >= this.nextHole/2 + this.holeWidth/2) {
+			// update gap distance and previous ground position
+			this.prevGround += this.nextHole/2 + this.holeWidth/2;
+
+			// spawn new platform and hole
+			this.nextHole = Phaser.Math.Between(200, 2000);
+			this.holeWidth = Phaser.Math.Between(40, 200);
+			var x = this.prevGround + this.nextHole/2;
+			if (first) {
+				this.holeWidth = 200;
+				this.prevGround = -(this.char.movement.pos.x - this.holeWidth/4);
+			}
+			var platform = this.add.rectangle(x, 422, this.nextHole, 58, 0xfffff, 0);
+			var hole = this.add.rectangle(x + this.nextHole/2 + this.holeWidth/2, 422, this.holeWidth + 5, 58, 0xffffff, 1);
+			this.gameObjectsGroup.add(hole);
 			this.platformGroup.add(platform);
 		}
 	}

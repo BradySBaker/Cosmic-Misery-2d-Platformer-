@@ -14,7 +14,7 @@ export default class characterController {
 		this.character.setBodySize(50, 150);
 		this.createArm();
 		this.createAnimations();
-
+		this.character.setDepth(1);
 		this.character.body.setCollideWorldBounds(false);
 		this.character.body.setAllowGravity(false);
 
@@ -263,6 +263,7 @@ export default class characterController {
 		this.forearm.setScale(.2);
 		this.forearm.setOrigin(0,0);
 		this.arm.setOrigin(0, .5);
+		this.arm.setDepth(1)
 	}
 
 
