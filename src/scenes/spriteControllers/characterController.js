@@ -5,15 +5,14 @@ export default class characterController {
 
 
 	createMainCharacter() { // ------- Creating main character
-		this.onGround = true;
-
-		this.movement = {dx: 0, g: .9, dy: 0, dir: 'right', pos: {x: 100, y: this.scene.gameHeight - 70}}
+		this.onGround = false;
+		this.c = {left: false, right: false, bottom: false, top: false}
+		this.movement = {dx: 0, g: .9, dy: 0, dir: 'right', pos: {x: 100, y: this.scene.gameHeight - 200}}
 
 		this.curAnim = '';
 		this.character = this.scene.physics.add.sprite(this.movement.pos.x, this.movement.pos.y, 'player');
 		this.character.setBodySize(50, 150);
 		this.createArm();
-
 		this.createAnimations();
 
 		this.character.body.setCollideWorldBounds(false);
@@ -28,8 +27,8 @@ export default class characterController {
 
 
   handleMainCharacter() { // ------ Main character movement/events      =====[Function]========
-		this.onGround = this.cBottom ? true : this.onGround;
-		if (this.jumpObj.isDown === true || !this.onGround) { //Jump pressed/inAir
+		this.onGround = this.c.bottom;
+		if (this.jumpObj.isDown === true || !this.onGround || this.hole) { //Jump pressed/inAir
 			this.handleCharacterJump();
 		}
 
@@ -88,17 +87,19 @@ export default class characterController {
 	}
 
   handleCharacterJump() { // ------ Main character jump          ========[Function]========
-		this.character.setOffset(24, 0 );
-		this.arm.x = this.character.x - 3;
-		if (((this.jumpObj.isDown && this.movement.pos.y === this.scene.gameHeight - 70) || this.jumpObj.isDown && this.cBottom) && this.jumpTimer < 0) {
-			this.cBottom = false;
-			this.movement.dy = -20;
-			this.onGround = false;
+		if (this.curAnim !== 'fall') {
 			this.curAnim = 'fall';
 			this.character.play('fall')
 			this.character.anims.pause();
+		}
+		this.character.setOffset(24, 0 );
+		this.arm.x = this.character.x - 3;
+		if (this.jumpObj.isDown && this.onGround && this.jumpTimer < 0) {
+			this.cBottom = false;
+			this.movement.dy = -20;
+			this.onGround = false;
 			this.jumpTimer = 10;
-		} else if (this.movement.pos.y + this.movement.dy <= this.scene.gameHeight - 70) {
+		} else if (!this.onGround) {
 			this.jumpTimer--;
 			if (this.movement.dy < -1 ) { //Going up
 				this.movement.dy *= this.movement.g;
@@ -133,23 +134,23 @@ export default class characterController {
 
 	setCharacterPos() { // ------- Char pos                 =======[Function]=======
 		this.movement.dx = this.movement.dir === 'right' ? this.movement.dx : -this.movement.dx;
-		if (this.cLeft && this.movement.dir === 'right') {
-			this.movement.dx = -1;
-			this.cLeft = false;
-		} else if (this.cRight && this.movement.dir === 'left') {
-			this.movement.dx = 1;
-			this.cRight = false;
-		} else if (this.cBottom){
+		if (this.c.left && this.movement.dir === 'right') {
+			this.movement.dx = -5;
+			this.c.left = false;
+		} else if (this.c.right && this.movement.dir === 'left') {
+			this.movement.dx = 5;
+			this.c.right = false;
+		} else if (this.c.bottom){
 			if (this.movement.dy > 0 ){
 				this.movement.dy = 0;
 			}
-			this.cBottom = false;
+			this.c.bottom = false;
 			this.onGround = false;
-		} else if (this.cTop) {
+		} else if (this.c.top) {
 			if (this.movement.dy < 0) {
 				this.movement.dy = 1;
 			}
-			this.cTop = false;
+			this.c.top = false;
 		}
 		this.movement.pos.x += this.movement.dx;
 

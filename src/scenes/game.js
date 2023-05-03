@@ -60,7 +60,10 @@ export default class Game extends Phaser.Scene {
 	this.enemyTimer = 1000;
 
 	this.setupPlatforms(gameObjectsGroup);
-	this.prevPlatX = 100;
+	this.prevGameObjX = 100;
+	this.nextPlatformX = 100;
+	this.nextHole = 0;
+	this.prevGround = 0;
 
 	this.physics.add.collider(this.platformGroup, this.projectileGroup);
 	this.physics.add.overlap(this.char.character, this.enemy1Controller.enemyGroup, () => {
@@ -73,7 +76,7 @@ export default class Game extends Phaser.Scene {
 
 
 this.cameras.main.startFollow(this.char.character, true, 0.5, 0.5, 0, 0);
-this.enemySpawner();
+// this.enemySpawner();
 
 if (this.physics.world.isPaused) {
 	this.physics.resume();
@@ -88,6 +91,7 @@ if (this.physics.world.isPaused) {
 		this.char.handleMainCharacter();
 		this.handleBackgrounds();
 		this.randomPlatformSpawner();
+		this.groundHandler();
 	}
 
 
@@ -210,42 +214,45 @@ if (this.physics.world.isPaused) {
 		})
 	this.physics.add.collider(this.platformGroup, this.enemy1Controller.enemyGroup);
 
-	this.physics.add.overlap(this.platformGroup, this.char.character, (platform, character) => {
-    var platCenter = new Phaser.Math.Vector2(platform.x, platform.y);
-    var charCenter = new Phaser.Math.Vector2(character.x, character.y);
+	this.physics.add.collider(this.char.character, this.platformGroup, onCollision, null, this);
 
-    // Calculate the vector between the centers
-    var distanceVector = charCenter.subtract(platCenter);
-
-    // Determine the absolute x and y distances between the centers
-    var distanceX = Math.abs(distanceVector.x);
-    var distanceY = Math.abs(distanceVector.y);
-
-    // Determine which side is the nearest
-    if (distanceX - 30 > distanceY) {
-        if (platCenter.x < charCenter.x) {
-					this.char.cLeft = true;
-        } else {
-					this.char.cRight = true;
-        }
-    } else {
-        if (character.y + character.height < platform.y) {
-          this.char.cTop = true;
-        } else {
-          this.char.cBottom = true;
-        }
-    }
-	});
+	// handle collision between character and platform
+	function onCollision(character, platform) {
+		var distObj = {};
+		distObj.bottom = ((character.y + character.height/2) - (platform.y - platform.height/2));
+		distObj.left = ((character.x + character.width/2) - (platform.x - platform.width/2))-30;
+		distObj.right = ((character.x - character.width/2) - (platform.x + platform.width/2))+30;
+		distObj.top = ((character.y - character.height/2) - (platform.y + platform.height/2));
+		var lowest = 'bottom';
+		for (var key in distObj) {
+			var dist = distObj[key];
+			if (Math.abs(distObj[lowest]) > Math.abs(dist)) {
+				lowest = key;
+			}
+		}
+		console.log(lowest);
+		this.char.c[lowest] = true;
 	}
 
+	}
+
+
 	randomPlatformSpawner() {
-		if (this.char.movement.pos.x - this.prevPlatX > 500) {
-			this.prevPlatX = this.char.movement.pos.x;
-			var platform = this.add.rectangle(400, Phaser.Math.Between(0, 400), 200, 50, 0xfffff, 1);
+		// if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
+		// 	this.nextPlatformX = Phaser.Math.Between(300, 500);
+		// 	this.prevGameObjX = this.char.movement.pos.x;
+		// 	var platform = this.add.rectangle(400, Phaser.Math.Between(300, 400), 100, 20, 0xfffff, 1);
+		// 	this.platformGroup.add(platform);
+		// }
+	}
+
+	groundHandler() {
+		if (this.char.movement.pos.x - this.prevGround > this.nextHole/2) {
+			this.nextHole = Phaser.Math.Between(300, 700);
+			this.prevGround = this.char.movement.pos.x;
+			var platform = this.add.rectangle(this.char.movement.pos.x, 422, this.nextHole, 58, 0xfffff, 1);
 			this.platformGroup.add(platform);
 		}
-
-
 	}
 
 }
