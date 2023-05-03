@@ -45,18 +45,24 @@ export default class Game extends Phaser.Scene {
 		this.physics.world.setBounds(-375, 0, 945, this.gameHeight);
 
 		this.gameObjectsGroup = this.add.group();
+		var gameObjectsGroup = this.gameObjectsGroup;
 		this.projectileGroup = this.physics.add.group({
 			defaultKey: 'projectile', // or whatever the key of your circle sprite is
 			maxSize: 50,
 			createCallback: function (projectile) {
 					// configure physics properties of the circle
+					projectile.body.setBounce(1);
+					gameObjectsGroup.add(projectile);
 					projectile.body.setCollideWorldBounds(true, .5, .5);
 			}
 	});
 
 	this.enemyTimer = 1000;
 
+	this.setupPlatforms(gameObjectsGroup);
+	this.prevPlatX = 100;
 
+	this.physics.add.collider(this.platformGroup, this.projectileGroup);
 	this.physics.add.overlap(this.char.character, this.enemy1Controller.enemyGroup, () => {
 		this.gameOver();
 		this.death = true;
@@ -81,6 +87,7 @@ if (this.physics.world.isPaused) {
 		this.handleObjectPositioning();
 		this.char.handleMainCharacter();
 		this.handleBackgrounds();
+		this.randomPlatformSpawner();
 	}
 
 
@@ -92,12 +99,10 @@ if (this.physics.world.isPaused) {
 		var curCircle;
 		curCircle = this.add.circle(x, y, 5, 0xffffff, 1);
 		this.projectileGroup.add(curCircle);
-		this.gameObjectsGroup.add(curCircle);
-
 		var velocity = 1000;
 		curCircle.name = 'projectile';
 		curCircle.body.setVelocity(Math.cos(radAng) * velocity, Math.sin(radAng) * velocity);
-		setTimeout(() => curCircle.destroy(), 1000);
+		setTimeout(() => curCircle.destroy(), 10000);
 	}
 
 	enemySpawner() {
@@ -144,18 +149,14 @@ if (this.physics.world.isPaused) {
 
 	handleObjectPositioning() {
 		this.gameObjectsGroup.children.iterate((gameObject) => {
-			if (gameObject.name === 'enemy' && this.char.onGround) {
+			if (gameObject.name === 'enemy' && (this.char.onGround || this.char.cBottom) ) {
 				if (gameObject.x < this.char.character.x && gameObject.body) {
 					gameObject.body.setVelocityX(100);
 				} else if(gameObject.body){
 					gameObject.body.setVelocityX(-100);
 				}
 			}
-			if (gameObject.name === 'projectile') {
-				gameObject.body.setVelocityX(gameObject.body.velocity.x - this.char.movement.dx);
-			} else {
 				gameObject.x -= this.char.movement.dx;
-			}
 		});
 	}
 
@@ -196,7 +197,60 @@ if (this.physics.world.isPaused) {
 		this.char.moveLObj = cursorKeys.left;
 		this.char.jumpObj = cursorKeys.up;
 	}
+
+	setupPlatforms(gameObjectsGroup) {
+		this.platformGroup = this.physics.add.group({
+			defaultKey: 'platform',
+			maxSize: 100,
+			createCallback: function(platform) {
+				gameObjectsGroup.add(platform);
+				platform.body.setAllowGravity(false);
+				platform.body.setImmovable(true);
+			}
+		})
+	this.physics.add.collider(this.platformGroup, this.enemy1Controller.enemyGroup);
+
+	this.physics.add.overlap(this.platformGroup, this.char.character, (platform, character) => {
+    var platCenter = new Phaser.Math.Vector2(platform.x, platform.y);
+    var charCenter = new Phaser.Math.Vector2(character.x, character.y);
+
+    // Calculate the vector between the centers
+    var distanceVector = charCenter.subtract(platCenter);
+
+    // Determine the absolute x and y distances between the centers
+    var distanceX = Math.abs(distanceVector.x);
+    var distanceY = Math.abs(distanceVector.y);
+
+    // Determine which side is the nearest
+    if (distanceX - 30 > distanceY) {
+        if (platCenter.x < charCenter.x) {
+					this.char.cLeft = true;
+        } else {
+					this.char.cRight = true;
+        }
+    } else {
+        if (character.y + character.height < platform.y) {
+          this.char.cTop = true;
+        } else {
+          this.char.cBottom = true;
+        }
+    }
+	});
+	}
+
+	randomPlatformSpawner() {
+		if (this.char.movement.pos.x - this.prevPlatX > 500) {
+			this.prevPlatX = this.char.movement.pos.x;
+			var platform = this.add.rectangle(400, Phaser.Math.Between(0, 400), 200, 50, 0xfffff, 1);
+			this.platformGroup.add(platform);
+		}
+
+
+	}
+
 }
+
+
 
 var createMenu = (game) => {
 	const menu = document.createElement("div");
