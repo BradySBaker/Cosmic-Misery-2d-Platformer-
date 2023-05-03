@@ -7,7 +7,7 @@ export default class characterController {
 	createMainCharacter() { // ------- Creating main character
 		this.onGround = true;
 
-		this.movement = {dx: 0, g: .95, dy: 0, dir: 'right', pos: {x: 100, y: this.scene.gameHeight - 70}}
+		this.movement = {dx: 0, g: .9, dy: 0, dir: 'right', pos: {x: 100, y: this.scene.gameHeight - 70}}
 
 		this.curAnim = '';
 		this.character = this.scene.physics.add.sprite(this.movement.pos.x, this.movement.pos.y, 'player');
@@ -23,11 +23,12 @@ export default class characterController {
 
 
     this.shootTimer = 0;
+		this.jumpTimer = 0;
 	}
 
 
   handleMainCharacter() { // ------ Main character movement/events      =====[Function]========
-
+		this.onGround = this.cBottom ? true : this.onGround;
 		if (this.jumpObj.isDown === true || !this.onGround) { //Jump pressed/inAir
 			this.handleCharacterJump();
 		}
@@ -89,17 +90,22 @@ export default class characterController {
   handleCharacterJump() { // ------ Main character jump          ========[Function]========
 		this.character.setOffset(24, 0 );
 		this.arm.x = this.character.x - 3;
-		if (this.jumpObj.isDown && this.movement.pos.y === this.scene.gameHeight - 70) {
+		if (((this.jumpObj.isDown && this.movement.pos.y === this.scene.gameHeight - 70) || this.jumpObj.isDown && this.cBottom) && this.jumpTimer < 0) {
+			this.cBottom = false;
 			this.movement.dy = -20;
 			this.onGround = false;
 			this.curAnim = 'fall';
 			this.character.play('fall')
 			this.character.anims.pause();
-
+			this.jumpTimer = 10;
 		} else if (this.movement.pos.y + this.movement.dy <= this.scene.gameHeight - 70) {
+			this.jumpTimer--;
 			if (this.movement.dy < -1 ) { //Going up
 				this.movement.dy *= this.movement.g;
 			} else { //Going down
+				if (this.movement.dy === 0) {
+					this.movement.dy = 1;
+				}
 				if (this.character.anims.currentFrame.index === 1) {
 					this.character.anims.nextFrame();
 				}
@@ -127,9 +133,27 @@ export default class characterController {
 
 	setCharacterPos() { // ------- Char pos                 =======[Function]=======
 		this.movement.dx = this.movement.dir === 'right' ? this.movement.dx : -this.movement.dx;
+		if (this.cLeft && this.movement.dir === 'right') {
+			this.movement.dx = -1;
+			this.cLeft = false;
+		} else if (this.cRight && this.movement.dir === 'left') {
+			this.movement.dx = 1;
+			this.cRight = false;
+		} else if (this.cBottom){
+			if (this.movement.dy > 0 ){
+				this.movement.dy = 0;
+			}
+			this.cBottom = false;
+			this.onGround = false;
+		} else if (this.cTop) {
+			if (this.movement.dy < 0) {
+				this.movement.dy = 1;
+			}
+			this.cTop = false;
+		}
+		this.movement.pos.x += this.movement.dx;
 
 		this.movement.pos.y += this.movement.dy;
-		this.movement.pos.x += this.movement.dx;
 
 		this.character.y = this.movement.pos.y;
 
@@ -171,8 +195,6 @@ export default class characterController {
 			mouseWorldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
 			mouseWorldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
 		}
-
-
 
 		var targetArmRad = Phaser.Math.Angle.Between(
 			this.arm.x, this.arm.y,
