@@ -4,7 +4,7 @@ import enemy1Controller from "./spriteControllers/enemy1Controller";
 
 export default class Game extends Phaser.Scene {
 	preload() {
-		this.load.image('sky', '..//assets/sky.png');
+		this.load.image('sky', '..//assets/sky2.png');
 		this.load.image('ground', '..//assets/ground2.png');
 		this.load.image('mountains1', '..//assets/mountains1.png');
 		this.load.image('mountains2', '..//assets/mountains2.png');
@@ -30,7 +30,7 @@ export default class Game extends Phaser.Scene {
 		this.createBackgrounds();
 
 		this.physics.world.setBoundsCollision(false, false, false, true);
-		this.gameWidth = this.sys.game.canvas.width
+		this.gameWidth = window.innerWidth
     this.gameHeight = 400;
 		const graphics = this.add.graphics();
 
@@ -42,7 +42,7 @@ export default class Game extends Phaser.Scene {
 		this.char.createMainCharacter();
 		this.enemy1Controller.createEnemy();
 
-		this.physics.world.setBounds(-375, 0, 945, this.gameHeight);
+		this.physics.world.setBounds(-375, 0, this.innerWidth, this.gameHeight);
 
 		this.gameObjectsGroup = this.add.group();
 		var gameObjectsGroup = this.gameObjectsGroup;
@@ -76,7 +76,8 @@ export default class Game extends Phaser.Scene {
 	});
 
 
-this.cameras.main.startFollow(this.char.character, true, 0.5, 0.5, 0, 0);
+this.cameras.main.startFollow(this.char.character, true, 0.5, 0.5, 0, 200);
+this.cameras.main.setZoom(0.7);
 // this.enemySpawner();
 
 if (this.physics.world.isPaused) {
@@ -119,27 +120,31 @@ if (this.physics.world.isPaused) {
 
 
 	createBackgrounds() {
-		this.add.image(0, -600, 'sky')
+		this.add.image(-window.innerWidth/4, -800, 'sky')
 		.setOrigin(0, 0)
-		.setScrollFactor(0, .5);
+		.setScrollFactor(0, .5)
+		.setScale(1.3);
 
 		this.backgrounds.push({
 			ratioX: 0.1,
-			sprite: this.add.tileSprite(0, 0, 945, 450, 'mountains2')
+			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 450, 'mountains2')
 			.setOrigin(0,0)
 			.setScrollFactor(0, .7)
+			.setScale(1.4)
 		})
 		this.backgrounds.push({
 			ratioX: 0.4,
-			sprite: this.add.tileSprite(0, 0, 945, 450, 'mountains1')
+			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 450, 'mountains1')
 			.setOrigin(0,0)
 			.setScrollFactor(0, 1)
+			.setScale(1.4)
 		})
 		this.backgrounds.push({
 			ratioX: 1,
-			sprite: this.add.tileSprite(0, 0, 945, 600, 'ground')
+			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 600, 'ground')
 			.setOrigin(0,0)
 			.setScrollFactor(0, 1)
+			.setScale(1.4)
 		})
 	}
 
@@ -147,7 +152,7 @@ if (this.physics.world.isPaused) {
 		for (let i =0 ; i< this.backgrounds.length; i++) {
 			const bg = this.backgrounds[i];
 
-			bg.sprite.tilePositionX = this.char.movement.pos.x * bg.ratioX;
+			bg.sprite.tilePositionX = this.char.movement.pos.x * bg.ratioX/1.4;
 		}
 	}
 
@@ -238,12 +243,12 @@ if (this.physics.world.isPaused) {
 
 
 	randomPlatformSpawner() {
-		// if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
-		// 	this.nextPlatformX = Phaser.Math.Between(300, 500);
-		// 	this.prevGameObjX = this.char.movement.pos.x;
-		// 	var platform = this.add.rectangle(400, Phaser.Math.Between(300, 400), 100, 20, 0xfffff, 1);
-		// 	this.platformGroup.add(platform);
-		// }
+		if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
+			this.nextPlatformX = Phaser.Math.Between(300, 500);
+			this.prevGameObjX = this.char.movement.pos.x;
+			var platform = this.add.rectangle(400, Phaser.Math.Between(300, 400), 100, 20, 0xfffff, 1);
+			this.platformGroup.add(platform);
+		}
 	}
 
 	groundHandler(first) {
@@ -259,8 +264,8 @@ if (this.physics.world.isPaused) {
 				this.holeWidth = 200;
 				this.prevGround = -(this.char.movement.pos.x - this.holeWidth/4);
 			}
-			var platform = this.add.rectangle(x, 430, this.nextHole, 58, 0xfffff, 0);
-			var hole = this.add.rectangle(x + this.nextHole/2 + this.holeWidth/2, 430, this.holeWidth + 5, 58, 0xffffff, 1);
+			var platform = this.add.rectangle(x, 590, this.nextHole, 58, 0xfffff, 0);
+			var hole = this.add.rectangle(x + this.nextHole/2 + this.holeWidth/2, 590, this.holeWidth + 5, 58, 0xffffff, 1);
 
 			this.gameObjectsGroup.add(hole);
 			this.platformGroup.add(platform);

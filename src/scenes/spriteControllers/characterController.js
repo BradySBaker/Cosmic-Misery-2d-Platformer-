@@ -7,7 +7,7 @@ export default class characterController {
 	createMainCharacter() { // ------- Creating main character
 		this.onGround = false;
 		this.c = {left: false, right: false, bottom: false, top: false}
-		this.movement = {dx: 0, g: .9, dy: 0, dir: 'right', pos: {x: 100, y: this.scene.gameHeight - 200}}
+		this.movement = {dx: 0, g: .9, dy: 0, dir: 'right', pos: {x: 100, y: this.scene.gameHeight - 50}}
 
 		this.curAnim = '';
 		this.character = this.scene.physics.add.sprite(this.movement.pos.x, this.movement.pos.y, 'player');
