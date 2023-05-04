@@ -5,7 +5,7 @@ import enemy1Controller from "./spriteControllers/enemy1Controller";
 export default class Game extends Phaser.Scene {
 	preload() {
 		this.load.image('sky', '..//assets/sky.png');
-		this.load.image('ground', '..//assets/ground.png');
+		this.load.image('ground', '..//assets/ground2.png');
 		this.load.image('mountains1', '..//assets/mountains1.png');
 		this.load.image('mountains2', '..//assets/mountains2.png');
 		this.load.atlas('player', '..//assets/player/player.png', '..//assets/player/player.json', true);
@@ -137,7 +137,7 @@ if (this.physics.world.isPaused) {
 		})
 		this.backgrounds.push({
 			ratioX: 1,
-			sprite: this.add.tileSprite(0, 0, 945, 450, 'ground')
+			sprite: this.add.tileSprite(0, 0, 945, 600, 'ground')
 			.setOrigin(0,0)
 			.setScrollFactor(0, 1)
 		})
@@ -259,8 +259,9 @@ if (this.physics.world.isPaused) {
 				this.holeWidth = 200;
 				this.prevGround = -(this.char.movement.pos.x - this.holeWidth/4);
 			}
-			var platform = this.add.rectangle(x, 422, this.nextHole, 58, 0xfffff, 0);
-			var hole = this.add.rectangle(x + this.nextHole/2 + this.holeWidth/2, 422, this.holeWidth + 5, 58, 0xffffff, 1);
+			var platform = this.add.rectangle(x, 430, this.nextHole, 58, 0xfffff, 0);
+			var hole = this.add.rectangle(x + this.nextHole/2 + this.holeWidth/2, 430, this.holeWidth + 5, 58, 0xffffff, 1);
+
 			this.gameObjectsGroup.add(hole);
 			this.platformGroup.add(platform);
 		}

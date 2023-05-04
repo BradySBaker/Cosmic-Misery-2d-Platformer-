@@ -8,7 +8,6 @@ export default class enemy1Controller {
 			defaultKey: 'enemy',
 			maxSize: 50,
 			createCallback: function (enemy) {
-				enemy.body.setCollideWorldBounds(true, 1, 1);
 			}
 		});
 	}

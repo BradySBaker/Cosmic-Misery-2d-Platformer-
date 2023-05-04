@@ -95,6 +95,8 @@ export default class characterController {
 		this.character.setOffset(24, 0 );
 		this.arm.x = this.character.x - 3;
 		if (this.jumpObj.isDown && this.onGround && this.jumpTimer < 0) {
+			this.character.play('fall')
+			this.character.anims.pause();
 			this.cBottom = false;
 			this.movement.dy = -20;
 			this.onGround = false;
@@ -263,7 +265,8 @@ export default class characterController {
 		this.forearm.setScale(.2);
 		this.forearm.setOrigin(0,0);
 		this.arm.setOrigin(0, .5);
-		this.arm.setDepth(1)
+		this.arm.setDepth(1);
+		this.forearm.setDepth(1);
 	}
 
 
