@@ -1,24 +1,23 @@
-export default class characterController {
+export default class selfController {
   constructor(scene) {
     this.scene = scene;
   }
 
 
-	createMainCharacter() { // ------- Creating main character
-		this.onGround = false;
+	createMainCharacter() { // ------- Creating main self
 		this.c = {left: false, right: false, bottom: false, top: false}
 		this.movement = {dx: 0, g: .9, dy: 0, dir: 'right', pos: {x: 100, y: this.scene.gameHeight - 50}}
 
 		this.curAnim = '';
-		this.character = this.scene.physics.add.sprite(this.movement.pos.x, this.movement.pos.y, 'player');
-		this.character.setBodySize(50, 150);
+		this.self = this.scene.physics.add.sprite(this.movement.pos.x, this.movement.pos.y, 'player');
+		this.self.setBodySize(50, 150);
 		this.createArm();
 		this.createAnimations();
-		this.character.setDepth(1);
-		this.character.body.setCollideWorldBounds(false);
-		this.character.body.setAllowGravity(false);
+		this.self.setDepth(1);
+		this.self.body.setCollideWorldBounds(false);
+		this.self.body.setAllowGravity(false);
 
-		this.character.setOrigin(1, 1);
+		this.self.setOrigin(1, 1);
 
 
     this.shootTimer = 0;
@@ -26,10 +25,9 @@ export default class characterController {
 	}
 
 
-  async handleMainCharacter() { // ------ Main character movement/events      =====[Function]========
-		this.onGround = this.c.bottom;
-		if (this.jumpObj.isDown === true || !this.onGround || this.hole) { //Jump pressed/inAir
-			this.handleCharacterJump();
+  async handleMainCharacter() { // ------ Main self movement/events      =====[Function]========
+		if (this.jumpObj.isDown === true || !this.c.bottom || this.hole) { //Jump pressed/inAir
+			this.handleJump();
 		}
 
 		var moved = false;
@@ -38,31 +36,31 @@ export default class characterController {
 		}
 		if (this.moveRObj.isDown || this.moveLObj.isDown) {
 			this.movement.dx = 5;
-			if (!this.onGround) {
+			if (!this.c.bottom) {
 				this.movement.dx = 7;
 			} else {
 				if (this.curAnim !== 'run') {
 					this.curAnim = 'run';
-					this.character.play('run');
+					this.self.play('run');
 				}
 			}
 			if (this.moveRObj.isDown) { //Right Press
-				if (this.onGround) {
-					this.character.setOffset(43, -5);
+				if (this.c.bottom) {
+					this.self.setOffset(43, -5);
 				}
 				this.movement.dir = 'right';
-				this.character.flipX = false;
+				this.self.flipX = false;
 			} else if (this.moveLObj.isDown) { //Left Press
-				if (this.onGround) {
-					this.character.setOffset(31, -5);
+				if (this.c.bottom) {
+					this.self.setOffset(31, -5);
 				}
 				this.movement.dir = 'left';
-				this.character.flipX = true;
+				this.self.flipX = true;
 			}
 		} else { //No move
-			if (this.curAnim !== 'idle' && this.onGround) { //Set idle settings
-				this.character.play('idle');
-				this.character.setOffset(-5,-4);
+			if (this.curAnim !== 'idle' && this.c.bottom) { //Set idle settings
+				this.self.play('idle');
+				this.self.setOffset(-5,-4);
 				this.curAnim = 'idle';
 			}
 			this.movement.dx = 0;
@@ -78,7 +76,7 @@ export default class characterController {
 			}
 		}
 
-		this.setCharacterPos();
+		this.setPos();
 	}
 
 	shootProjectile() {
@@ -86,36 +84,35 @@ export default class characterController {
 		this.scene.createProjectile();
 	}
 
-  handleCharacterJump() { // ------ Main character jump          ========[Function]========
+  handleJump() { // ------ Main self jump          ========[Function]========
 		if (this.curAnim !== 'fall') {
 			this.curAnim = 'fall';
-			this.character.play('fall')
-			this.character.anims.pause();
+			this.self.play('fall')
+			this.self.anims.pause();
 		}
-		this.character.setOffset(24, 0 );
-		this.arm.x = this.character.x - 3;
-		if (this.jumpObj.isDown && this.onGround && this.jumpTimer < 0) {
-			this.character.play('fall')
-			this.character.anims.pause();
+		this.self.setOffset(24, 0 );
+		this.arm.x = this.self.x - 3;
+		if (this.jumpObj.isDown && this.c.bottom && this.jumpTimer < 0) {
+			this.self.play('fall')
+			this.self.anims.pause();
 			this.movement.dy = -20;
-			this.cBottom = false;
-			this.onGround = false;
+			this.c.bottom = false;
 			this.jumpTimer = 10;
-		} else if (!this.onGround) {
-			this.jumpTimer--;
+		} else if (!this.c.bottom) {
+			this.jumpTimer -= 1 * this.scene.deltaTime;
 			if (this.movement.dy < -1 ) { //Going up
 				this.movement.dy *= Math.pow(this.movement.g, this.scene.deltaTime);
 			} else { //Going down
 				if (this.movement.dy === 0) {
 					this.movement.dy = 1;
 				}
-				if (this.character.anims.currentFrame.index === 1) {
-					this.character.anims.nextFrame();
+				if (this.self.anims.currentFrame.index === 1) {
+					this.self.anims.nextFrame();
 				}
 				this.movement.dy = Math.abs(this.movement.dy /= Math.pow(this.movement.g, this.scene.deltaTime));
 			}
 		} else {
-			this.onGround = true;
+			this.c.bottom = true;
 			this.movement.dy = 0;
 			this.movement.pos.y = this.scene.gameHeight - 70;
 		}
@@ -134,7 +131,7 @@ export default class characterController {
 		}
 	}
 
-	setCharacterPos() { // ------- Char pos                 =======[Function]=======
+	setPos() { // ------- Char pos                 =======[Function]=======
 		this.movement.dx = this.movement.dir === 'right' ? this.movement.dx : -this.movement.dx ;
 		if (this.c.left && this.movement.dir === 'right') {
 			this.movement.dx = -5;
@@ -146,8 +143,6 @@ export default class characterController {
 			if (this.movement.dy > 0 ){
 				this.movement.dy = 0;
 			}
-			this.c.bottom = false;
-			this.onGround = false;
 		} else if (this.c.top) {
 			if (this.movement.dy < 0) {
 				this.movement.dy = 1;
@@ -159,7 +154,7 @@ export default class characterController {
 
 		this.movement.pos.y += this.movement.dy * this.scene.deltaTime;
 
-		this.character.y = this.movement.pos.y;
+		this.self.y = this.movement.pos.y;
 
 		this.arm.y = this.movement.pos.y - 38;
 		this.handleArmPos();
@@ -167,23 +162,23 @@ export default class characterController {
 	}
 
 	handleArmPos(string) {
-		var curFrame = this.character.anims.currentFrame;
+		var curFrame = this.self.anims.currentFrame;
 		var idleOffset = 3;
 		var runOffset = {x: 8, y: 2};
 		if (curFrame) {
 			if (this.movement.dir === 'right') {
 				if (this.curAnim === 'idle') {
-					this.arm.x =  this.character.x + this.idleArmPos[curFrame.index-1] + idleOffset;
+					this.arm.x =  this.self.x + this.idleArmPos[curFrame.index-1] + idleOffset;
 				} else if (this.curAnim === 'run') {
-					this.arm.x =  this.character.x + this.runArmPos.x[curFrame.index-1] - runOffset.x;
-					this.arm.y = this.character.y + this.runArmPos.y[curFrame.index-1] + runOffset.y;
+					this.arm.x =  this.self.x + this.runArmPos.x[curFrame.index-1] - runOffset.x;
+					this.arm.y = this.self.y + this.runArmPos.y[curFrame.index-1] + runOffset.y;
 				}
-			} else { // character is facing left
+			} else { // self is facing left
 				if (this.curAnim === 'idle') {
-					this.arm.x =  this.character.x - this.idleArmPos[curFrame.index-1] - idleOffset;
+					this.arm.x =  this.self.x - this.idleArmPos[curFrame.index-1] - idleOffset;
 				} else if(this.curAnim === 'run') {
-					this.arm.x = this.character.x - this.runArmPos.x[curFrame.index-1] + runOffset.x;
-					this.arm.y = this.character.y + this.runArmPos.y[curFrame.index-1] + runOffset.y;
+					this.arm.x = this.self.x - this.runArmPos.x[curFrame.index-1] + runOffset.x;
+					this.arm.y = this.self.y + this.runArmPos.y[curFrame.index-1] + runOffset.y;
 				}
 			}
 		}
@@ -260,7 +255,7 @@ export default class characterController {
 	createArm() { // -- Sets up arm                     ======[Function]==============
 		this.runArmPos = {x: [15, 15, 13, 12, 13, 14, 14, 16, 18, 16, 13, 11, 11, 12, 13, 14], y: [-30, -28, -28, -30, -33, -37, -38, -39, -37, -37, -38, -41, -43, -41, -40, -36]};
 		this.idleArmPos = [-22, -21, -20, -19, -16, -12, -8, -5, -3, -1, -1, -3, -5, -8, -9, -12, -14, -16, -18, -20];
-		this.arm = this.scene.add.image(this.character.x, this.movement.pos.y - 35, 'playerArm')
+		this.arm = this.scene.add.image(this.self.x, this.movement.pos.y - 35, 'playerArm')
 		this.forearm = this.scene.add.image(this.arm.x, this.arm.y, 'playerForearm');
 		this.arm.setScale(.2);
 		this.forearm.setScale(.2);
@@ -274,9 +269,9 @@ export default class characterController {
 
 
 	createAnimations() { // ---- Creates all animations                  ======[Function]========
-		this.character.anims.create({
+		this.self.anims.create({
 			key: 'death',
-			frames: this.character.anims.generateFrameNames('player', {
+			frames: this.self.anims.generateFrameNames('player', {
 					prefix: 'death/death_',
 					start: 0,
 					end: 26,
@@ -288,9 +283,9 @@ export default class characterController {
 	});
 
 
-		this.character.anims.create({
+		this.self.anims.create({
 			key: 'idle',
-			frames: this.character.anims.generateFrameNames('player', {
+			frames: this.self.anims.generateFrameNames('player', {
 					prefix: 'idle/idle_',
 					start: 0,
 					end: 19,
@@ -301,9 +296,9 @@ export default class characterController {
 			repeat: -1
 	});
 
-	this.character.anims.create({
+	this.self.anims.create({
 		key: 'walk',
-		frames: this.character.anims.generateFrameNames('player', {
+		frames: this.self.anims.generateFrameNames('player', {
 				prefix: 'walk/walk_',
 				start: 0,
 				end: 21,
@@ -314,9 +309,9 @@ export default class characterController {
 		repeat: -1
 });
 
-	this.character.anims.create({
+	this.self.anims.create({
 		key: 'fall',
-		frames: this.character.anims.generateFrameNames('player', {
+		frames: this.self.anims.generateFrameNames('player', {
 				prefix: 'inAir/player-InAir_',
 				start: 0,
 				end: 1,
@@ -327,9 +322,9 @@ export default class characterController {
 		repeat: -1
 	});
 
-	this.character.anims.create({
+	this.self.anims.create({
 		key: 'run',
-		frames: this.character.anims.generateFrameNames('player', {
+		frames: this.self.anims.generateFrameNames('player', {
 				prefix: 'run/run_',
 				start: 0,
 				end: 15,

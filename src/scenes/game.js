@@ -60,6 +60,7 @@ export default class Game extends Phaser.Scene {
 	this.enemyTimer = 1000;
 
 	this.setupPlatforms(gameObjectsGroup);
+	this.platformDestroyTimer = 1000;
 	this.prevGameObjX = 100;
 	this.nextPlatformX = 100;
 	this.nextHole = 1000;
@@ -68,7 +69,7 @@ export default class Game extends Phaser.Scene {
 	this.groundHandler(true);
 
 	this.physics.add.collider(this.platformGroup, this.projectileGroup);
-	this.physics.add.overlap(this.char.character, this.enemy1Controller.enemyGroup, () => {
+	this.physics.add.overlap(this.char.self, this.enemy1Controller.enemyGroup, () => {
 		this.gameOver();
 		this.death = true;
 	});
@@ -77,7 +78,7 @@ export default class Game extends Phaser.Scene {
 	});
 
 
-this.cameras.main.startFollow(this.char.character, true, 0.5, 0.5, 0, 200);
+this.cameras.main.startFollow(this.char.self, true, 0.5, 0.5, 0, 200);
 this.cameras.main.setZoom(0.7);
 this.enemySpawner();
 
@@ -88,17 +89,21 @@ if (this.physics.world.isPaused) {
 
 
 	update(time, delta) {
-		this.physics.world.collide(this.char.character, this.platformGroup, (char, plat) => this.handePlatformCollision(char, plat)); // Must happen before handleMainChar
+		this.physics.world.collide(this.char.self, this.platformGroup, (char, plat) => this.handePlatformCollision(char, plat)); // Must happen before handleMainChar
 		// this.physics.world.setFPS(1000/delta);
 		this.deltaTime = delta / (1000 / 60);
 		if (this.death) {
+			if (!this.char.c.bottom) {
+				this.char.self.y++;
+			}
 			return;
 		}
 		this.char.handleMainCharacter();
 		this.handleObjectPositioning();
 		this.handleBackgrounds();
-		this.randomPlatformSpawner();
+		// this.randomPlatformSpawner();
 		this.groundHandler();
+		this.char.c.bottom = false; // resets c bottom to be recalculated next frame
 	}
 
 
@@ -166,11 +171,20 @@ if (this.physics.world.isPaused) {
 
 	handleObjectPositioning() {
 		this.gameObjectsGroup.children.iterate((gameObject) => {
-			if (gameObject.name === 'enemy' && (this.char.onGround || this.char.cBottom) ) {
-				if (gameObject.x < this.char.character.x && gameObject.body) {
+			if (!gameObject) {
+				return;
+			}
+			if (gameObject.name === 'enemy' && (this.char.c.bottom) ) {
+				if (gameObject.x < this.char.self.x && gameObject.body) {
 					gameObject.body.setVelocityX(100);
 				} else if(gameObject.body){
 					gameObject.body.setVelocityX(-100);
+				}
+			}
+			if (gameObject.name === 'platform') {
+				if (this.char.self.x - gameObject.x > 	this.platformDestroyTimer) {
+					gameObject.destroy();
+					return;
 				}
 			}
 				gameObject.x -= this.char.movement.dx * this.deltaTime;
@@ -183,7 +197,7 @@ if (this.physics.world.isPaused) {
 			this.physics.world.timeScale = 2
 			this.char.arm.visible = false;
 			this.char.forearm.visible = false;
-			this.char.character.play('death');
+			this.char.self.play('death');
 
 			setTimeout(() => createMenu(this), 2000);
 
@@ -220,6 +234,7 @@ if (this.physics.world.isPaused) {
 			defaultKey: 'platform',
 			maxSize: 100,
 			createCallback: function(platform) {
+				platform.name = 'platform';
 				gameObjectsGroup.add(platform);
 				platform.body.setAllowGravity(false);
 				platform.body.setImmovable(true);
@@ -247,12 +262,12 @@ if (this.physics.world.isPaused) {
 
 
 	randomPlatformSpawner() {
-		// if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
-		// 	this.nextPlatformX = Phaser.Math.Between(300, 500);
-		// 	this.prevGameObjX = this.char.movement.pos.x;
-		// 	var platform = this.add.rectangle(400, Phaser.Math.Between(300, 400), 100, 20, 0xfffff, 1);
-		// 	this.platformGroup.add(platform);
-		// }
+		if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
+			this.nextPlatformX = Phaser.Math.Between(300, 500);
+			this.prevGameObjX = this.char.movement.pos.x;
+			var platform = this.add.rectangle(400, Phaser.Math.Between(300, 400), 100, 20, 0xfffff, 1);
+			this.platformGroup.add(platform);
+		}
 	}
 
 	groundHandler(first) {
@@ -261,7 +276,7 @@ if (this.physics.world.isPaused) {
 			this.prevGround += this.nextHole/2 + this.holeWidth/2;
 
 			// spawn new platform and hole
-			this.nextHole = Phaser.Math.Between(200, 2000);
+			this.nextHole = !first ? Phaser.Math.Between(200, 2000) : 1000;
 			this.holeWidth = Phaser.Math.Between(40, 200);
 			var x = this.prevGround + this.nextHole/2;
 			if (first) {
@@ -269,7 +284,9 @@ if (this.physics.world.isPaused) {
 				this.prevGround = -(this.char.movement.pos.x - this.holeWidth/4);
 			}
 			var platform = this.add.rectangle(x, 590, this.nextHole, 58, 0xfffff, 0);
-			var hole = this.add.tileSprite(x + this.nextHole/2 + this.holeWidth/2, 680, this.holeWidth + 5, 250, 'hole');
+			var hole = this.add.sprite(x + this.nextHole/2 + this.holeWidth/2, 680, 'hole');
+			hole.displayWidth =this.holeWidth + 5;
+			hole.displayHeight = 250;
 
 			this.gameObjectsGroup.add(hole);
 			this.platformGroup.add(platform);
