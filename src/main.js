@@ -36,7 +36,7 @@ const config = {
 	},
 	input: {
 		activePointers: 2,
-}
+	}
 }
 
 const game = new Phaser.Game(config);

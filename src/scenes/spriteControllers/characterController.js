@@ -26,7 +26,7 @@ export default class characterController {
 	}
 
 
-  handleMainCharacter() { // ------ Main character movement/events      =====[Function]========
+  async handleMainCharacter() { // ------ Main character movement/events      =====[Function]========
 		this.onGround = this.c.bottom;
 		if (this.jumpObj.isDown === true || !this.onGround || this.hole) { //Jump pressed/inAir
 			this.handleCharacterJump();
@@ -97,14 +97,14 @@ export default class characterController {
 		if (this.jumpObj.isDown && this.onGround && this.jumpTimer < 0) {
 			this.character.play('fall')
 			this.character.anims.pause();
-			this.cBottom = false;
 			this.movement.dy = -20;
+			this.cBottom = false;
 			this.onGround = false;
 			this.jumpTimer = 10;
 		} else if (!this.onGround) {
 			this.jumpTimer--;
 			if (this.movement.dy < -1 ) { //Going up
-				this.movement.dy *= this.movement.g;
+				this.movement.dy *= this.movement.g * this.scene.deltaTime;
 			} else { //Going down
 				if (this.movement.dy === 0) {
 					this.movement.dy = 1;
@@ -135,7 +135,7 @@ export default class characterController {
 	}
 
 	setCharacterPos() { // ------- Char pos                 =======[Function]=======
-		this.movement.dx = this.movement.dir === 'right' ? this.movement.dx : -this.movement.dx;
+		this.movement.dx = this.movement.dir === 'right' ? this.movement.dx : -this.movement.dx ;
 		if (this.c.left && this.movement.dir === 'right') {
 			this.movement.dx = -5;
 			this.c.left = false;
@@ -154,9 +154,10 @@ export default class characterController {
 			}
 			this.c.top = false;
 		}
-		this.movement.pos.x += this.movement.dx;
 
-		this.movement.pos.y += this.movement.dy;
+		this.movement.pos.x += this.movement.dx * this.scene.deltaTime;
+
+		this.movement.pos.y += this.movement.dy * this.scene.deltaTime;
 
 		this.character.y = this.movement.pos.y;
 

@@ -8,6 +8,7 @@ export default class Game extends Phaser.Scene {
 		this.load.image('ground', '..//assets/ground2.png');
 		this.load.image('mountains1', '..//assets/mountains1.png');
 		this.load.image('mountains2', '..//assets/mountains2.png');
+		this.load.image('hole', '..//assets/hole.png');
 		this.load.atlas('player', '..//assets/player/player.png', '..//assets/player/player.json', true);
 		this.load.image('playerArm', '..//assets/player/lArm.png');
 		this.load.image('playerForearm', '..//assets/player/lForearm.png');
@@ -78,21 +79,25 @@ export default class Game extends Phaser.Scene {
 
 this.cameras.main.startFollow(this.char.character, true, 0.5, 0.5, 0, 200);
 this.cameras.main.setZoom(0.7);
-// this.enemySpawner();
+this.enemySpawner();
 
 if (this.physics.world.isPaused) {
 	this.physics.resume();
 }
 }
 
-	update() {
+
+	update(time, delta) {
+		this.physics.world.collide(this.char.character, this.platformGroup, (char, plat) => this.handePlatformCollision(char, plat)); // Must happen before handleMainChar
+		// this.physics.world.setFPS(1000/delta);
+		this.deltaTime = delta / (1000 / 60);
 		if (this.death) {
 			return;
 		}
 		this.handleObjectPositioning();
-		this.char.handleMainCharacter();
 		this.handleBackgrounds();
 		this.randomPlatformSpawner();
+		this.char.handleMainCharacter();
 		this.groundHandler();
 	}
 
@@ -107,7 +112,9 @@ if (this.physics.world.isPaused) {
 		this.projectileGroup.add(curCircle);
 		var velocity = 1000;
 		curCircle.name = 'projectile';
-		curCircle.body.setVelocity(Math.cos(radAng) * velocity, Math.sin(radAng) * velocity);
+		if (curCircle.body) {
+			curCircle.body.setVelocity(Math.cos(radAng) * velocity, Math.sin(radAng) * velocity);
+		}
 		setTimeout(() => curCircle.destroy(), 10000);
 	}
 
@@ -166,7 +173,7 @@ if (this.physics.world.isPaused) {
 					gameObject.body.setVelocityX(-100);
 				}
 			}
-				gameObject.x -= this.char.movement.dx;
+				gameObject.x -= this.char.movement.dx * this.deltaTime;
 		});
 	}
 
@@ -219,11 +226,10 @@ if (this.physics.world.isPaused) {
 			}
 		})
 	this.physics.add.collider(this.platformGroup, this.enemy1Controller.enemyGroup);
-
-	this.physics.add.collider(this.char.character, this.platformGroup, onCollision, null, this);
+}
 
 	// handle collision between character and platform
-	function onCollision(character, platform) {
+	handePlatformCollision(character, platform) {
 		var distObj = {};
 		distObj.bottom = ((character.y + character.height/2) - (platform.y - platform.height/2));
 		distObj.left = ((character.x + character.width/2) - (platform.x - platform.width/2))-30;
@@ -239,16 +245,14 @@ if (this.physics.world.isPaused) {
 		this.char.c[lowest] = true;
 	}
 
-}
-
 
 	randomPlatformSpawner() {
-		if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
-			this.nextPlatformX = Phaser.Math.Between(300, 500);
-			this.prevGameObjX = this.char.movement.pos.x;
-			var platform = this.add.rectangle(400, Phaser.Math.Between(300, 400), 100, 20, 0xfffff, 1);
-			this.platformGroup.add(platform);
-		}
+		// if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
+		// 	this.nextPlatformX = Phaser.Math.Between(300, 500);
+		// 	this.prevGameObjX = this.char.movement.pos.x;
+		// 	var platform = this.add.rectangle(400, Phaser.Math.Between(300, 400), 100, 20, 0xfffff, 1);
+		// 	this.platformGroup.add(platform);
+		// }
 	}
 
 	groundHandler(first) {
@@ -265,7 +269,7 @@ if (this.physics.world.isPaused) {
 				this.prevGround = -(this.char.movement.pos.x - this.holeWidth/4);
 			}
 			var platform = this.add.rectangle(x, 590, this.nextHole, 58, 0xfffff, 0);
-			var hole = this.add.rectangle(x + this.nextHole/2 + this.holeWidth/2, 590, this.holeWidth + 5, 58, 0xffffff, 1);
+			var hole = this.add.tileSprite(x + this.nextHole/2 + this.holeWidth/2, 680, this.holeWidth + 5, 250, 'hole');
 
 			this.gameObjectsGroup.add(hole);
 			this.platformGroup.add(platform);
