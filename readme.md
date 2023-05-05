@@ -8,4 +8,6 @@ update1: This is a simple 2d side-scroller game made using Phaser.js. At this po
 
 update2: The character model is now animating and the arm follows the mouse smoothly.
 
+update3: The map is now fullscreen and there are randomely generating holes.
+
 Currently Playable At: https://bradysbaker.github.io/shooterGame1/
