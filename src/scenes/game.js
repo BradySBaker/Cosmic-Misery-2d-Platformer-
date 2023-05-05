@@ -94,10 +94,10 @@ if (this.physics.world.isPaused) {
 		if (this.death) {
 			return;
 		}
+		this.char.handleMainCharacter();
 		this.handleObjectPositioning();
 		this.handleBackgrounds();
 		this.randomPlatformSpawner();
-		this.char.handleMainCharacter();
 		this.groundHandler();
 	}
 

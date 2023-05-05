@@ -34,7 +34,7 @@ export default class characterController {
 
 		var moved = false;
 		if (this.shootTimer > 0) {
-			this.shootTimer--;
+			this.shootTimer -= 1 * this.scene.deltaTime;
 		}
 		if (this.moveRObj.isDown || this.moveLObj.isDown) {
 			this.movement.dx = 5;
@@ -67,7 +67,7 @@ export default class characterController {
 			}
 			this.movement.dx = 0;
 		}
-		if (this.scene.input.activePointer.isDown && this.shootTimer === 0) {
+		if (this.scene.input.activePointer.isDown && this.shootTimer <= 0) {
 			if (this.scene.mobile) {
 				var pointer = this.getNonJoyStickMobilePointer();
 				if (pointer.isDown) {
@@ -104,7 +104,7 @@ export default class characterController {
 		} else if (!this.onGround) {
 			this.jumpTimer--;
 			if (this.movement.dy < -1 ) { //Going up
-				this.movement.dy *= this.movement.g * this.scene.deltaTime;
+				this.movement.dy *= Math.pow(this.movement.g, this.scene.deltaTime);
 			} else { //Going down
 				if (this.movement.dy === 0) {
 					this.movement.dy = 1;
@@ -112,7 +112,7 @@ export default class characterController {
 				if (this.character.anims.currentFrame.index === 1) {
 					this.character.anims.nextFrame();
 				}
-				this.movement.dy = Math.abs(this.movement.dy /= this.movement.g);
+				this.movement.dy = Math.abs(this.movement.dy /= Math.pow(this.movement.g, this.scene.deltaTime));
 			}
 		} else {
 			this.onGround = true;
