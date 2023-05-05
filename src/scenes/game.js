@@ -181,8 +181,8 @@ if (this.physics.world.isPaused) {
 					gameObject.body.setVelocityX(-100);
 				}
 			}
-			if (gameObject.name === 'platform') {
-				if (this.char.self.x - gameObject.x > 	this.platformDestroyTimer) {
+			if (gameObject.name === 'platform' || gameObject.name === 'hole') {
+				if (this.char.self.x - gameObject.x > window.innerWidth) {
 					gameObject.destroy();
 					return;
 				}
@@ -287,7 +287,7 @@ if (this.physics.world.isPaused) {
 			var hole = this.add.sprite(x + this.nextHole/2 + this.holeWidth/2, 680, 'hole');
 			hole.displayWidth =this.holeWidth + 5;
 			hole.displayHeight = 250;
-
+			hole.name = 'hole';
 			this.gameObjectsGroup.add(hole);
 			this.platformGroup.add(platform);
 		}
