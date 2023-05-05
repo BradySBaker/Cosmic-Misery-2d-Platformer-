@@ -19,7 +19,7 @@ import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-p
 // };
 
 const config = {
-	width: 945,
+	width: window.innerWidth,
 	height: 800,
 	backgroundColor: '2c003e',
 	type: Phaser.AUTO,
@@ -27,7 +27,7 @@ const config = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 1000 },
-			debug: false
+			debug: true
 		}
 	},
 	plugins:{
@@ -36,7 +36,7 @@ const config = {
 	},
 	input: {
 		activePointers: 2,
-}
+	}
 }
 
 const game = new Phaser.Game(config);
