@@ -76,9 +76,7 @@ export default class Game extends Phaser.Scene {
 	this.physics.add.overlap(this.projectileGroup, this.enemy1Controller.enemyGroup, (circle, enemy) => {
     enemy.destroy();
 	});
-
-
-this.cameras.main.startFollow(this.char.self, true, 0.5, 0.5, 0, 200);
+this.cameras.main.startFollow(this.char.self, true, 0.5, 0.5, 0, this.gameWidth/7);
 this.cameras.main.setZoom(0.7);
 this.enemySpawner();
 
@@ -134,21 +132,21 @@ if (this.physics.world.isPaused) {
 	createBackgrounds() {
 		this.add.image(-window.innerWidth/4, -800, 'sky')
 		.setOrigin(0, 0)
-		.setScrollFactor(0, .5)
+		.setScrollFactor(0, .3)
 		.setScale(1.3);
 
 		this.backgrounds.push({
 			ratioX: 0.1,
 			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 450, 'mountains2')
 			.setOrigin(0,0)
-			.setScrollFactor(0, .7)
+			.setScrollFactor(0, .6)
 			.setScale(1.4)
 		})
 		this.backgrounds.push({
 			ratioX: 0.4,
 			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 450, 'mountains1')
 			.setOrigin(0,0)
-			.setScrollFactor(0, 1)
+			.setScrollFactor(0, .8)
 			.setScale(1.4)
 		})
 		this.backgrounds.push({
@@ -213,7 +211,7 @@ if (this.physics.world.isPaused) {
 			thumb.fillCircle(0, 0, 25);
 
 		this.joystick = this.plugins.get('VirtualJoystick').add(this, {
-			x: 200,
+			x: 100,
 			y: this.gameHeight + 50,
 			radius: 50,
 			base: base,
@@ -316,3 +314,4 @@ var restart = (e, game) => {
 	e.remove();
 	game.scene.restart();
 }
+

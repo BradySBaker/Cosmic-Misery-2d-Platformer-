@@ -21,7 +21,6 @@ export default class selfController {
 
 
     this.shootTimer = 0;
-		this.jumpTimer = 0;
 	}
 
 
@@ -92,14 +91,12 @@ export default class selfController {
 		}
 		this.self.setOffset(24, 0 );
 		this.arm.x = this.self.x - 3;
-		if (this.jumpObj.isDown && this.c.bottom && this.jumpTimer < 0) {
+		if (this.jumpObj.isDown && this.c.bottom) {
 			this.self.play('fall')
 			this.self.anims.pause();
 			this.movement.dy = -20;
 			this.c.bottom = false;
-			this.jumpTimer = 10;
 		} else if (!this.c.bottom) {
-			this.jumpTimer -= 1 * this.scene.deltaTime;
 			if (this.movement.dy < -1 ) { //Going up
 				this.movement.dy *= Math.pow(this.movement.g, this.scene.deltaTime);
 			} else { //Going down
