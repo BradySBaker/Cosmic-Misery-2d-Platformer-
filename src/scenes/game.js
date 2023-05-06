@@ -132,21 +132,21 @@ if (this.physics.world.isPaused) {
 	createBackgrounds() {
 		this.add.image(-window.innerWidth/4, -800, 'sky')
 		.setOrigin(0, 0)
-		.setScrollFactor(0, .5)
+		.setScrollFactor(0, .3)
 		.setScale(1.3);
 
 		this.backgrounds.push({
 			ratioX: 0.1,
 			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 450, 'mountains2')
 			.setOrigin(0,0)
-			.setScrollFactor(0, .7)
+			.setScrollFactor(0, .6)
 			.setScale(1.4)
 		})
 		this.backgrounds.push({
 			ratioX: 0.4,
 			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 450, 'mountains1')
 			.setOrigin(0,0)
-			.setScrollFactor(0, 1)
+			.setScrollFactor(0, .8)
 			.setScale(1.4)
 		})
 		this.backgrounds.push({
