@@ -13,7 +13,6 @@ export default class enemy1Controller {
 	}
 
 	spawnEnemy(x, y) {
-		console.log(x);
 		var curEnemy = this.scene.add.rectangle(x, y, 20, 50, 0xffffff, 1);
 		curEnemy.name = 'enemy';
 		this.enemyGroup.add(curEnemy);

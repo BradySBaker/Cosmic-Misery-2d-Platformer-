@@ -102,9 +102,10 @@ if (this.physics.world.isPaused) {
 		this.char.handleMainCharacter();
 		this.handleObjectPositioning();
 		this.handleBackgrounds();
-		// this.randomPlatformSpawner();
+		this.randomPlatformSpawner();
 		this.groundHandler();
 		this.char.c.bottom = false; // resets c bottom to be recalculated next frame
+		this.char.c.top = false;
 	}
 
 
@@ -125,12 +126,12 @@ if (this.physics.world.isPaused) {
 	}
 
 	enemySpawner() {
-		if (!this.death) {
-			var spawnX = this.char.self.x + this.game.config.width;
-			var spawnY = 400;
-			this.enemy1Controller.spawnEnemy(spawnX, spawnY);
-		}
-		setTimeout(() => {this.enemySpawner()}, this.enemyTimer);
+		// if (!this.death) {
+		// 	var spawnX = this.char.self.x + this.game.config.width;
+		// 	var spawnY = 400;
+		// 	this.enemy1Controller.spawnEnemy(spawnX, spawnY);
+		// }
+		// setTimeout(() => {this.enemySpawner()}, this.enemyTimer);
 	}
 
 
@@ -268,9 +269,9 @@ if (this.physics.world.isPaused) {
 
 	randomPlatformSpawner() {
 		if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
-			this.nextPlatformX = Phaser.Math.Between(300, 500);
+			this.nextPlatformX = Phaser.Math.Between(500, 1000);
 			this.prevGameObjX = this.char.movement.pos.x;
-			var platform = this.add.rectangle(400, Phaser.Math.Between(300, 400), 100, 20, 0xfffff, 1);
+			var platform = this.add.rectangle(400, this.char.self.y - 50, 500, 50, 0xfffff, 1);
 			this.platformGroup.add(platform);
 		}
 	}
