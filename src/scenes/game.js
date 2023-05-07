@@ -15,6 +15,9 @@ export default class Game extends Phaser.Scene {
 	}
 
 	create() {
+		this.gameWidth = window.innerWidth
+    this.gameHeight = this.sys.game.canvas.height
+
 		this.input.addPointer(2);
 
 		this.death = false;
@@ -32,8 +35,6 @@ export default class Game extends Phaser.Scene {
 		this.createBackgrounds();
 
 		this.physics.world.setBoundsCollision(false, false, false, true);
-		this.gameWidth = window.innerWidth
-    this.gameHeight = 400;
 		const graphics = this.add.graphics();
 
 		if (/Mobi/.test(navigator.userAgent)) {
@@ -84,8 +85,17 @@ export default class Game extends Phaser.Scene {
 
 	this.physics.world.enableBodySleeping = true;
 
-this.cameras.main.startFollow(this.char.self, true, 0.5, 0.5, 0, this.gameWidth/7);
-this.cameras.main.setZoom(0.7);
+var yCameraOffset = 200;
+var zoom = .7;
+
+if (this.gameHeight <= 500) {
+	zoom = .5;
+	yCameraOffset = 0;
+}
+
+this.cameras.main.startFollow(this.char.self, true, 0.5, 0.5, 0, yCameraOffset);
+this.cameras.main.setZoom(zoom);
+
 this.enemySpawner();
 
 if (this.physics.world.isPaused) {
@@ -144,28 +154,32 @@ if (this.physics.world.isPaused) {
 
 
 	createBackgrounds() {
-		this.add.image(-window.innerWidth/4, -800, 'sky')
+		var skyOffset = -window.innerWidth/4
+		if (this.gameHeight <= 500) {
+			skyOffset = -window.innerWidth;
+		}
+		this.add.image(skyOffset, -800, 'sky')
 		.setOrigin(0, 0)
 		.setScrollFactor(0, .3)
 		.setScale(1.3);
 
 		this.backgrounds.push({
 			ratioX: 0.1,
-			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 450, 'mountains2')
+			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.6, 450, 'mountains2')
 			.setOrigin(0,0)
 			.setScrollFactor(0, .6)
 			.setScale(1.4)
 		})
 		this.backgrounds.push({
 			ratioX: 0.4,
-			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 450, 'mountains1')
+			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.6, 450, 'mountains1')
 			.setOrigin(0,0)
 			.setScrollFactor(0, .8)
 			.setScale(1.4)
 		})
 		this.backgrounds.push({
 			ratioX: 1,
-			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.4, 600, 'ground')
+			sprite: this.add.tileSprite(-window.innerWidth/2, 0, window.innerWidth*1.6, 600, 'ground')
 			.setOrigin(0,0)
 			.setScrollFactor(0, 1)
 			.setScale(1.4)
@@ -228,7 +242,7 @@ if (this.physics.world.isPaused) {
 
 		this.joystick = this.plugins.get('VirtualJoystick').add(this, {
 			x: 100,
-			y: this.gameHeight + 50,
+			y: this.gameHeight - 100,
 			radius: 50,
 			base: base,
 			thumb: thumb,
