@@ -6,7 +6,7 @@ export default class selfController {
 
 	createMainCharacter() { // ------- Creating main self [c is collision]
 		this.c = {left: false, right: false, bottom: false, top: false}
-		this.movement = {dx: 0, g: .9, dy: 0, dir: 'right', pos: {x: 100, y: this.scene.gameHeight - 50}}
+		this.movement = {dx: 0, g: .9, dy: 0, dir: 'right', pos: {x: 100, y: 400}}
 		this.prevGrounded = 0;
 		this.prevJump = 0;
 

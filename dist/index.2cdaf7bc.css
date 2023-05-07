@@ -1,3 +1,7 @@
+#fullscreen {
+  position: absolute;
+}
+
 body {
   height: 100vh;
   background-color: #2c003e;
