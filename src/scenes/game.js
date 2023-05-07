@@ -26,6 +26,7 @@ export default class Game extends Phaser.Scene {
 		this.char.moveRObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 		this.char.moveLObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 		this.char.jumpObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+		this.enemiesKilled = 0;
 
 		this.backgrounds = [];
 		this.createBackgrounds();
@@ -69,6 +70,7 @@ export default class Game extends Phaser.Scene {
 	this.groundHandler(true);
 
 	this.physics.add.collider(this.platformGroup, this.projectileGroup, (p, projectile) => {
+		this.enemiesKilled++;
 		projectile.destroy();
 	});
 	this.physics.add.overlap(this.char.self, this.enemy1Controller.enemyGroup, () => {
@@ -79,6 +81,9 @@ export default class Game extends Phaser.Scene {
     enemy.destroy();
 		circle.destroy();
 	});
+
+	this.physics.world.enableBodySleeping = true;
+
 this.cameras.main.startFollow(this.char.self, true, 0.5, 0.5, 0, this.gameWidth/7);
 this.cameras.main.setZoom(0.7);
 this.enemySpawner();
@@ -126,12 +131,15 @@ if (this.physics.world.isPaused) {
 	}
 
 	enemySpawner() {
-		// if (!this.death) {
-		// 	var spawnX = this.char.self.x + this.game.config.width;
-		// 	var spawnY = 400;
-		// 	this.enemy1Controller.spawnEnemy(spawnX, spawnY);
-		// }
-		// setTimeout(() => {this.enemySpawner()}, this.enemyTimer);
+		if (!this.death) {
+			if (this.enemyTimer >= 100) {
+				this.enemyTimer -= 1;
+			}
+			var spawnX = this.char.self.x + this.game.config.width;
+			var spawnY = this.char.self.y;
+			this.enemy1Controller.spawnEnemy(spawnX, spawnY);
+		}
+		setTimeout(() => {this.enemySpawner()}, this.enemyTimer);
 	}
 
 
@@ -271,7 +279,9 @@ if (this.physics.world.isPaused) {
 		if (this.char.movement.pos.x - this.prevGameObjX > this.nextPlatformX) {
 			this.nextPlatformX = Phaser.Math.Between(500, 1000);
 			this.prevGameObjX = this.char.movement.pos.x;
-			var platform = this.add.rectangle(400, this.char.self.y - 50, 500, 50, 0xfffff, 1);
+			var spawnX = this.char.self.x + this.game.config.width;
+			var spawnY = Math.max(this.char.self.y - 50, -10);
+			var platform = this.add.rectangle(spawnX, spawnY, 500, 50, 0xfffff, 1);
 			this.platformGroup.add(platform);
 		}
 	}
@@ -309,8 +319,11 @@ var createMenu = (game) => {
 	const deathMessage = document.createElement("p1");
 	deathMessage.innerHTML = 'You Died';
 
+	const pointsMessage = document.createElement("p2");
+	pointsMessage.innerHTML = `Enemies Killed - ${game.enemiesKilled}`;
+
 	const button = document.createElement("button")
-	menu.append(deathMessage, button);
+	menu.append(deathMessage, pointsMessage, button);
 	menu.id = "death";
 	button.innerHTML = "START";
 

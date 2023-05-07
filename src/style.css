@@ -49,5 +49,10 @@ body {
 	font-size: 9vw;
 	font-weight: bold;
 	color: red;
+}
 
+#death p2 {
+	font-size: 5vw;
+	font-weight: bold;
+	color: #2c003e;
 }
