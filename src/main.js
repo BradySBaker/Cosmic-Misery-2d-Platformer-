@@ -22,7 +22,13 @@ const config = {
 	}
 }
 
+
 //Handle fullscreen on mobile
+
+document.body.style.height = (window.innerHeight *1.5) + 'px'; //a lot of pixels or a large precentage
+window.scrollTo(0, 1); // moves the viewport to the top
+document.body.style.height = '100vh'; // OR clientHeight + 'px' OR something
+
 var element = document.body;
 
 var requestMethod = element.requestFullScreen ||
