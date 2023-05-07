@@ -52,7 +52,7 @@ export default class Game extends Phaser.Scene {
 			maxSize: 50,
 			createCallback: function (projectile) {
 					// configure physics properties of the circle
-					projectile.body.setBounce(1);
+					projectile.body.setBounce(.3);
 					gameObjectsGroup.add(projectile);
 			}
 	});
@@ -68,13 +68,16 @@ export default class Game extends Phaser.Scene {
 	this.prevGround = -(this.nextHole - this.holeWidth);
 	this.groundHandler(true);
 
-	this.physics.add.collider(this.platformGroup, this.projectileGroup);
+	this.physics.add.collider(this.platformGroup, this.projectileGroup, (p, projectile) => {
+		projectile.destroy();
+	});
 	this.physics.add.overlap(this.char.self, this.enemy1Controller.enemyGroup, () => {
 		this.gameOver();
 		this.death = true;
 	});
 	this.physics.add.overlap(this.projectileGroup, this.enemy1Controller.enemyGroup, (circle, enemy) => {
     enemy.destroy();
+		circle.destroy();
 	});
 this.cameras.main.startFollow(this.char.self, true, 0.5, 0.5, 0, this.gameWidth/7);
 this.cameras.main.setZoom(0.7);
@@ -113,7 +116,7 @@ if (this.physics.world.isPaused) {
 		var curCircle;
 		curCircle = this.add.circle(x, y, 5, 0xffffff, 1);
 		this.projectileGroup.add(curCircle);
-		var velocity = 1000;
+		var velocity = 2000;
 		curCircle.name = 'projectile';
 		if (curCircle.body) {
 			curCircle.body.setVelocity(Math.cos(radAng) * velocity, Math.sin(radAng) * velocity);
@@ -123,7 +126,9 @@ if (this.physics.world.isPaused) {
 
 	enemySpawner() {
 		if (!this.death) {
-			this.enemy1Controller.spawnEnemy();
+			var spawnX = this.char.self.x + this.game.config.width;
+			var spawnY = 400;
+			this.enemy1Controller.spawnEnemy(spawnX, spawnY);
 		}
 		setTimeout(() => {this.enemySpawner()}, this.enemyTimer);
 	}
@@ -185,7 +190,9 @@ if (this.physics.world.isPaused) {
 					return;
 				}
 			}
+			if (gameObject.name !== 'projectile') {
 				gameObject.x -= this.char.movement.dx * this.deltaTime;
+			}
 		});
 	}
 

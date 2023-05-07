@@ -19,6 +19,7 @@ export default class selfController {
 
 		this.self.setOrigin(1, 1);
 
+		this.speed = 10;
 
     this.shootTimer = 0;
 	}
@@ -34,9 +35,9 @@ export default class selfController {
 			this.shootTimer -= 1 * this.scene.deltaTime;
 		}
 		if (this.moveRObj.isDown || this.moveLObj.isDown) {
-			this.movement.dx = 5;
+			this.movement.dx = this.speed;
 			if (!this.c.bottom) {
-				this.movement.dx = 7;
+				this.movement.dx = this.speed + 3;
 			} else {
 				if (this.curAnim !== 'run') {
 					this.curAnim = 'run';
@@ -131,10 +132,10 @@ export default class selfController {
 	setPos() { // ------- Char pos                 =======[Function]=======
 		this.movement.dx = this.movement.dir === 'right' ? this.movement.dx : -this.movement.dx ;
 		if (this.c.left && this.movement.dir === 'right') {
-			this.movement.dx = -5;
+			this.movement.dx = -this.speed;
 			this.c.left = false;
 		} else if (this.c.right && this.movement.dir === 'left') {
-			this.movement.dx = 5;
+			this.movement.dx = this.speed;
 			this.c.right = false;
 		} else if (this.c.bottom){
 			if (this.movement.dy > 0 ){
