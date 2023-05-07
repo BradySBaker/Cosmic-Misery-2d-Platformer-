@@ -117,7 +117,9 @@ export default class selfController {
 				if (this.self.anims.currentFrame.index === 1) {
 					this.self.anims.nextFrame();
 				}
-				this.movement.dy = Math.abs(this.movement.dy /= Math.pow(this.movement.g, this.scene.deltaTime));
+				if (this.movement.dy >= -25) {
+					this.movement.dy = Math.abs(this.movement.dy /= Math.pow(this.movement.g, this.scene.deltaTime));
+				}
 			}
 		}
 	}
@@ -140,17 +142,23 @@ export default class selfController {
 		if (this.c.left && this.movement.dir === 'right') {
 			// this.movement.dx = -this.speed;
 			this.c.left = false;
-			this.movement.dy = -5;
+			if (this.jumpObj.isDown) {
+				this.movement.dy = -20;
+			}
+			this.movement.dx = 0;
 		} else if (this.c.right && this.movement.dir === 'left') {
 			// this.movement.dx = this.speed;
 			this.c.right = false;
-			this.movement.dy = -5;
+			if (this.jumpObj.isDown) {
+				this.movement.dy = -20;
+			}
+			this.movement.dx = 0;
 		} else if (this.c.bottom){
 			if (this.movement.dy > 0 ){
 				this.movement.dy = 0;
 			}
 		} else if (this.c.top) {
-			this.movement.dy = -20;
+			this.movement.dy = 1;
 		}
 
 		this.movement.pos.x += this.movement.dx * this.scene.deltaTime;

@@ -289,7 +289,7 @@ if (this.physics.world.isPaused) {
 				this.holeWidth = 200;
 				this.prevGround = -(this.char.movement.pos.x - this.holeWidth/4);
 			}
-			var platform = this.add.rectangle(x, 590, this.nextHole, 58, 0xfffff, 0);
+			var platform = this.add.rectangle(x, 680, this.nextHole, 250, 0xfffff, 0);
 			var hole = this.add.sprite(x + this.nextHole/2 + this.holeWidth/2, 680, 'hole');
 			hole.displayWidth =this.holeWidth + 5;
 			hole.displayHeight = 250;
