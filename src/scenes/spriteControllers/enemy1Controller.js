@@ -12,8 +12,8 @@ export default class enemy1Controller {
 		});
 	}
 
-	spawnEnemy() {
-		var curEnemy = this.scene.add.rectangle(500, 350, 20, 50, 0xffffff, 1);
+	spawnEnemy(x, y) {
+		var curEnemy = this.scene.add.rectangle(x, y, 20, 50, 0xffffff, 1);
 		curEnemy.name = 'enemy';
 		this.enemyGroup.add(curEnemy);
 		this.scene.gameObjectsGroup.add(curEnemy);
