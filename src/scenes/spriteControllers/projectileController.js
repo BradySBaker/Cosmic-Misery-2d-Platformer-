@@ -6,11 +6,12 @@ export default class projectileController {
 
 	createProjectile() { // ------------ Projectile
 		var radAng = this.scene.char.forearm.angle*Math.PI/180;
-		var x = this.scene.char.forearm.x + 40*Math.cos(radAng) - 1*Math.sin(radAng);
-		var y = this.scene.char.forearm.y + 40*Math.sin(radAng) + 1*Math.cos(radAng);
+		var offset = 0;
+		var x = this.scene.char.forearm.x + offset*Math.cos(radAng) - 1*Math.sin(radAng);
+		var y = this.scene.char.forearm.y + offset*Math.sin(radAng) + 1*Math.cos(radAng);
 
 		var projectile = this.scene.add.sprite(x, y, 'projectile');
-		projectile.setScale(.2);
+		projectile.setScale(.1);
 
 		var velocity = 100;
 		projectile.name = 'projectile';
@@ -31,13 +32,13 @@ export default class projectileController {
 			projectile.y += projectile.velocity.y * this.scene.deltaTime;
 
 			if (projectile.deathTimer <= 0) {
-				this.projectiles.splice(this.projectiles.indexOf(projectile), 1);
 				projectile.destroy();
+				this.projectiles.splice(this.projectiles.indexOf(projectile), 1);
 				return;
 			}
 
 			projectile.deathTimer -= 1 * this.scene.deltaTime;
-
+			let collided = false;
 			this.scene.gameObjectsGroup.children.iterate(gameObject => {
 				if (!gameObject) {
 					return;
@@ -47,13 +48,16 @@ export default class projectileController {
 					projectile.x, projectile.y
 				), gameObject.getBounds());
         if (intersects) {
+					collided = true;
 					if (gameObject.name === "enemy") {
 						gameObject.destroy();
 					}
-					projectile.destroy()
-          this.projectiles.splice(idx, 1); // Remove reference to destroyed projectile
         }
 			});
+			if (collided) {
+				this.projectiles.splice(idx, 1); // Remove reference to destroyed projectile
+				projectile.destroy();
+			}
 		});
 	}
 
