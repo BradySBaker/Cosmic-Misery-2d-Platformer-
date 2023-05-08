@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import CharacterController from "./spriteControllers/characterController";
 import enemy1Controller from "./spriteControllers/enemy1Controller";
 
+import menus from "./menus/index";
 export default class Game extends Phaser.Scene {
 	preload() {
 		this.load.image('sky', '..//assets/sky2.png');
@@ -227,7 +228,7 @@ if (this.physics.world.isPaused) {
 			this.char.forearm.visible = false;
 			this.char.self.play('death');
 
-			setTimeout(() => createMenu(this), 2000);
+			setTimeout(() => menus.deathMenu(this), 2000);
 
 		}
 	}
@@ -326,27 +327,4 @@ if (this.physics.world.isPaused) {
 }
 
 
-
-var createMenu = (game) => {
-	const menu = document.createElement("div");
-
-	const deathMessage = document.createElement("p1");
-	deathMessage.innerHTML = 'You Died';
-
-	const pointsMessage = document.createElement("p2");
-	pointsMessage.innerHTML = `Enemies Killed - ${game.enemiesKilled}`;
-
-	const button = document.createElement("button")
-	menu.append(deathMessage, pointsMessage, button);
-	menu.id = "death";
-	button.innerHTML = "START";
-
-	document.body.appendChild(menu);
-	button.addEventListener("click", () => restart(menu, game));
-}
-
-var restart = (e, game) => {
-	e.remove();
-	game.scene.restart();
-}
 

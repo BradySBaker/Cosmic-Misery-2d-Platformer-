@@ -1,7 +1,3 @@
-#fullscreen{
-	position: absolute;
-}
-
 body {
 	display: flex;
 	justify-content: center;
@@ -11,7 +7,12 @@ body {
 	overflow: hidden;
 }
 
-#death {
+
+/*Start Menu*/
+
+
+/*Death Menu*/
+#death, #start {
 	position: absolute;
 	display: flex;
 	justify-content: center;
@@ -27,7 +28,7 @@ body {
 	border-radius: 20px;
 }
 
-#death button {
+button {
 	width: 20vw;
 	height: 8vw;
 	position: relative;
@@ -38,7 +39,7 @@ body {
 	border-radius: 10px;
 }
 
-#death button:hover {
+button:hover {
 	animation: button 1s forwards;
 }
 
@@ -49,7 +50,7 @@ body {
 	}
 }
 
-#death p1 {
+p1 {
 	font-size: 9vw;
 	font-weight: bold;
 	color: red;
