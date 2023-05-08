@@ -1,4 +1,4 @@
-export default class selfController {
+export default class characterController {
   constructor(scene) {
     this.scene = scene;
   }
@@ -84,7 +84,7 @@ export default class selfController {
 
 	shootProjectile() {
 		this.shootTimer = 20;
-		this.scene.createProjectile();
+		this.scene.projectileController.createProjectile();
 	}
 
   handleJump() { // ------ Main self jump          ========[Function]========

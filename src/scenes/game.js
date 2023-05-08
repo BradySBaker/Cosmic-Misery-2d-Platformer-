@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import CharacterController from "./spriteControllers/characterController";
 import enemy1Controller from "./spriteControllers/enemy1Controller";
+import projectileController from "./spriteControllers/projectileController";
 
 import menus from "./menus/index";
 export default class Game extends Phaser.Scene {
@@ -13,6 +14,7 @@ export default class Game extends Phaser.Scene {
 		this.load.atlas('player', '..//assets/player/player.png', '..//assets/player/player.json', true);
 		this.load.image('playerArm', '..//assets/player/lArm.png');
 		this.load.image('playerForearm', '..//assets/player/lForearm.png');
+		this.load.image('projectile', '..//assets/player/projectile.png');
 	}
 
 	create() {
@@ -25,6 +27,7 @@ export default class Game extends Phaser.Scene {
 		this.char = new CharacterController(this);
 
 		this.enemy1Controller = new enemy1Controller(this);
+		this.projectileController = new projectileController(this);
 
 		//Keybinds
 		this.char.moveRObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
@@ -48,17 +51,12 @@ export default class Game extends Phaser.Scene {
 
 		this.physics.world.setBounds(-375, 0, this.innerWidth, this.gameHeight);
 
-		this.gameObjectsGroup = this.add.group();
-		var gameObjectsGroup = this.gameObjectsGroup;
-		this.projectileGroup = this.physics.add.group({
-			defaultKey: 'projectile', // or whatever the key of your circle sprite is
-			maxSize: 50,
-			createCallback: function (projectile) {
-					// configure physics properties of the circle
-					projectile.body.setBounce(.3);
-					gameObjectsGroup.add(projectile);
+		this.gameObjectsGroup = this.add.group({
+			callback: (gameObject) => {
+				this.quadTree.insert(gameObject);
 			}
-	});
+		});
+		var gameObjectsGroup = this.gameObjectsGroup;
 
 	this.enemyTimer = 1000;
 
@@ -71,17 +69,9 @@ export default class Game extends Phaser.Scene {
 	this.prevGround = -(this.nextHole - this.holeWidth);
 	this.groundHandler(true);
 
-	this.physics.add.collider(this.platformGroup, this.projectileGroup, (p, projectile) => {
-		this.enemiesKilled++;
-		projectile.destroy();
-	});
 	this.physics.add.overlap(this.char.self, this.enemy1Controller.enemyGroup, () => {
 		this.gameOver();
 		this.death = true;
-	});
-	this.physics.add.overlap(this.projectileGroup, this.enemy1Controller.enemyGroup, (circle, enemy) => {
-    enemy.destroy();
-		circle.destroy();
 	});
 
 	this.physics.world.enableBodySleeping = true;
@@ -120,26 +110,11 @@ if (this.physics.world.isPaused) {
 		this.handleBackgrounds();
 		this.randomPlatformSpawner();
 		this.groundHandler();
+		this.projectileController.handleProjectiles();
 		this.char.c.bottom = false; // resets c bottom to be recalculated next frame
 		this.char.c.top = false;
 	}
 
-
-
-	createProjectile() { // ------------ Projectile
-		var radAng = this.char.forearm.angle*Math.PI/180;
-		var x = this.char.forearm.x + 40*Math.cos(radAng) - 1*Math.sin(radAng);
-		var y = this.char.forearm.y + 40*Math.sin(radAng) + 1*Math.cos(radAng);
-		var curCircle;
-		curCircle = this.add.circle(x, y, 5, 0xffffff, 1);
-		this.projectileGroup.add(curCircle);
-		var velocity = 2000;
-		curCircle.name = 'projectile';
-		if (curCircle.body) {
-			curCircle.body.setVelocity(Math.cos(radAng) * velocity, Math.sin(radAng) * velocity);
-		}
-		setTimeout(() => curCircle.destroy(), 10000);
-	}
 
 	enemySpawner() {
 		if (!this.death) {
@@ -214,9 +189,7 @@ if (this.physics.world.isPaused) {
 					return;
 				}
 			}
-			if (gameObject.name !== 'projectile') {
-				gameObject.x -= this.char.movement.dx * this.deltaTime;
-			}
+			gameObject.x -= this.char.movement.dx * this.deltaTime;
 		});
 	}
 
