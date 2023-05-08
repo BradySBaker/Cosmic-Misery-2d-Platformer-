@@ -46,7 +46,7 @@ export default class Game extends Phaser.Scene {
 		var scene = this;
 
 		document.getElementById('fullscreen');
-		window.onresize = function(){ if (!scene.fullscreen) {location.reload();} else {scene.fullscreen = false;}} //Reload entire page on window resize
+		window.onresize = function(){ if (!scene.fullscreen) {location.reload();}} //Reload entire page on window resize
 	}
 
 	update() {

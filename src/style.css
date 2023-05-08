@@ -37,6 +37,8 @@ button {
 	color: rgb(255, 255, 255);
 	background-color: red;
 	border-radius: 10px;
+	box-shadow: 10px 5px 5px rgb(0, 0, 0);
+	margin-bottom: 10px;
 }
 
 button:hover {
@@ -53,6 +55,11 @@ button:hover {
 p1 {
 	font-size: 9vw;
 	font-weight: bold;
+	color: red;
+	text-shadow: 5px 1px 2px black;
+}
+
+p {
 	color: red;
 }
 

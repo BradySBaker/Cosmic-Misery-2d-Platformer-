@@ -20,12 +20,15 @@ module.exports = {
 		startButton.style.backgroundColor = 'blue';
 		startButton.style.color = 'green'
 
-		menu.append(startMessage, fullscreenButton, startButton);
+		const androidMessage = document.createElement("p");
+		androidMessage.innerHTML = "Not if on android exit desktop mode in chrome settings!";
+
+		menu.append(startMessage, fullscreenButton, startButton, androidMessage);
 		menu.id = "start";
 
 		document.body.appendChild(menu);
 
-		var handleFullscreen = () => {game.fullscreen = true; setTimeout(toggleFullScreen, 100);}
+		var handleFullscreen = () => {game.fullscreen = true; toggleFullScreen()}
 
 		fullscreenButton.addEventListener("click", handleFullscreen);
 
