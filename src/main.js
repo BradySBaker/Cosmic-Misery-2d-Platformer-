@@ -1,6 +1,9 @@
 import Phaser from "phaser";
 import Game from "./scenes/game";
+import Start from "./scenes/menus/start";
+
 import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
+
 const config = {
 	width: window.innerWidth,
 	height: Math.min(Math.max(window.innerHeight, 400), 800),
@@ -22,44 +25,9 @@ const config = {
 	}
 }
 
-
-function toggleFullScreen() {
-  var doc = window.document;
-  var docEl = doc.documentElement;
-
-  var requestFullScreen =
-    docEl.requestFullscreen ||
-    docEl.mozRequestFullScreen ||
-    docEl.webkitRequestFullScreen ||
-    docEl.msRequestFullscreen;
-  var cancelFullScreen =
-    doc.exitFullscreen ||
-    doc.mozCancelFullScreen ||
-    doc.webkitExitFullscreen ||
-    doc.msExitFullscreen;
-
-  if (
-    !doc.fullscreenElement &&
-    !doc.mozFullScreenElement &&
-    !doc.webkitFullscreenElement &&
-    !doc.msFullscreenElement
-  ) {
-    requestFullScreen.call(docEl);
-  } else {
-    cancelFullScreen.call(doc);
-  }
-}
-
-const fullscreenButton = document.getElementById('fullscreen');
-
-
-fullscreenButton.addEventListener('click', () => {
-toggleFullScreen();
-});
-
 const game = new Phaser.Game(config);
-const gameScene = game.scene.add('game', Game);
-game.scene.start('game');
+game.scene.add('game', Game);
+game.scene.add('start', Start);
+game.scene.start('start'); //Creates fullscreen button
 
-window.onresize = function(){ location.reload(); } //Reload entire page on window resize
 
