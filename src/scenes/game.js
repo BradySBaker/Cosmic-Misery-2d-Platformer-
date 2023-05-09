@@ -6,16 +6,16 @@ import projectileController from "./spriteControllers/projectileController";
 import menus from "./menus/index";
 export default class Game extends Phaser.Scene {
 	preload() {
-		this.load.image('sky', '..//assets/sky2.png');
-		this.load.image('ground', '..//assets/ground2.png');
-		this.load.image('mountains1', '..//assets/mountains1.png');
-		this.load.image('mountains2', '..//assets/mountains2.png');
-		this.load.image('hole', '..//assets/hole.png');
-		this.load.atlas('player', '..//assets/player/player.png', '..//assets/player/player.json', true);
-		this.load.image('playerArm', '..//assets/player/lArm.png');
-		this.load.image('playerForearm', '..//assets/player/lForearm.png');
-		this.load.image('projectile', '..//assets/player/projectile.png');
-		this.load.image('python', '..//assets/player/python.png');
+		this.load.image('sky', './assets/sky2.png');
+		this.load.image('ground', './assets/ground2.png');
+		this.load.image('mountains1', './assets/mountains1.png');
+		this.load.image('mountains2', './assets/mountains2.png');
+		this.load.image('hole', './assets/hole.png');
+		this.load.atlas('player', './assets/player/player.png', './assets/player/player.json', true);
+		this.load.image('playerArm', './assets/player/lArm.png');
+		this.load.image('playerForearm', './assets/player/lForearm.png');
+		this.load.image('projectile', './assets/player/projectile.png');
+		this.load.image('python', './assets/player/python.png');
 	}
 
 	create() {
@@ -200,6 +200,7 @@ if (this.physics.world.isPaused) {
 			this.physics.world.timeScale = 2
 			this.char.arm.visible = false;
 			this.char.forearm.visible = false;
+			this.char.gun.visible = false;
 			this.char.self.play('death');
 
 			setTimeout(() => menus.deathMenu(this), 2000);

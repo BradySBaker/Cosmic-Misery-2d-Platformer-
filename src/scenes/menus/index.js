@@ -21,7 +21,7 @@ module.exports = {
 		startButton.style.color = 'green'
 
 		const androidMessage = document.createElement("p");
-		androidMessage.innerHTML = "Not if on android exit desktop mode in chrome settings!";
+		androidMessage.innerHTML = "Note if on android exit desktop mode in chrome settings!";
 
 		menu.append(startMessage, fullscreenButton, startButton, androidMessage);
 		menu.id = "start";
