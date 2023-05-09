@@ -185,7 +185,7 @@ if (this.physics.world.isPaused) {
 				}
 			}
 			if (gameObject.name === 'platform' || gameObject.name === 'hole') {
-				if (this.char.self.x - gameObject.x > window.innerWidth) {
+				if (this.char.self.x - (gameObject.x + gameObject.width) > window.innerWidth) {
 					gameObject.destroy();
 					return;
 				}

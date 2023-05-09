@@ -10,6 +10,10 @@ export default class characterController {
 		this.prevGrounded = 0;
 		this.prevJump = 0;
 
+		this.lastShot = 100;
+		this.recoilOffset = 0;
+
+
 		this.curAnim = '';
 		this.self = this.scene.physics.add.sprite(this.movement.pos.x, this.movement.pos.y, 'player');
 		this.self.setBodySize(50, 150);
@@ -207,6 +211,7 @@ export default class characterController {
 			this.forearm.x, this.forearm.y,
 			mouseWorldX, mouseWorldY
 		)
+
 		var armRadAngle = this.arm.angle*Math.PI/180;
 		var forearmRadAngle = this.forearm.angle*Math.PI/180;
 		if (targetArmRad < -Math.PI/2 && armRadAngle > 0) {
@@ -215,7 +220,6 @@ export default class characterController {
 				targetArmRad -= Math.PI*2;
 		}
 		var mouseArmAngle;
-		console.log(this.mobilePointerTimer);
 		if (armRadAngle < targetArmRad && this.movement.dir === 'right' || armRadAngle > targetArmRad && this.movement.dir === 'left' ) { //If arm going down
 			mouseArmAngle = Phaser.Math.RadToDeg(targetArmRad);
 		} else { //If arm going up
@@ -224,8 +228,26 @@ export default class characterController {
 		}
 
 		var mouseForearmAngle = Phaser.Math.RadToDeg(targetForearmRad);
-		this.arm.angle = mouseArmAngle;
-		this.forearm.angle = mouseForearmAngle
+
+		if (this.lastShot <= 20) {
+			var offset = 10;
+			if (this.movement.dir === "right") {
+				offset = -10;
+			}
+			this.arm.angle += offset/this.lastShot;
+			this.forearm.angle = this.arm.angle;
+		} else if (this.lastShot <= 25) {
+			var offset = 7;
+			if (this.movement.dir === "right") {
+				offset = -7;
+			}
+			this.arm.angle -= offset;
+			this.forearm.angle = this.arm.angle;
+		} else {
+			this.arm.angle = mouseArmAngle;
+			this.forearm.angle = mouseForearmAngle;
+		}
+
 		var yPosOffset = -1;
 
 		if (this.movement.dir === 'right') {
@@ -249,14 +271,19 @@ export default class characterController {
 		this.gun.y = y;
 		this.gun.angle = this.forearm.angle;
 
+		this.lastShot += 1 * this.scene.deltaTime;
+
 		if (this.scene.input.activePointer.isDown && this.shootTimer <= 0) { //Handles shooting after arm updated
-			var pointer = this.getNonJoyStickMobilePointer();
 			if (this.scene.mobile) {
+				var pointer = this.getNonJoyStickMobilePointer();
 				if (pointer.isDown) {
+					this.lastShot = 1;
 					this.shootProjectile();
 				}
 			} else { //Not mobile
+				this.lastShot = 1;
 				this.shootProjectile()
+				this.justShot = true;
 			}
 		}
 
