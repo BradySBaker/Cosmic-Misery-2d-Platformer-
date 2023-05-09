@@ -31,3 +31,7 @@ game.scene.add('start', Start);
 game.scene.start('start'); //Creates fullscreen button
 
 
+var canvas = game.canvas;
+
+// Set the willReadFrequently attribute to true
+canvas.setAttribute('willReadFrequently', 'true');

@@ -268,6 +268,7 @@ export default class characterController {
 		this.idleArmPos = [-22, -21, -20, -19, -16, -12, -8, -5, -3, -1, -1, -3, -5, -8, -9, -12, -14, -16, -18, -20];
 		this.arm = this.scene.add.image(this.self.x, this.movement.pos.y - 35, 'playerArm')
 		this.forearm = this.scene.add.image(this.arm.x, this.arm.y, 'playerForearm');
+		this.gun = this.scene.add.image(this.arm.x, this.arm.y, 'python');
 		this.arm.setScale(.2);
 		this.forearm.setScale(.2);
 		this.forearm.setOrigin(0,0);

@@ -15,6 +15,7 @@ export default class Game extends Phaser.Scene {
 		this.load.image('playerArm', '..//assets/player/lArm.png');
 		this.load.image('playerForearm', '..//assets/player/lForearm.png');
 		this.load.image('projectile', '..//assets/player/projectile.png');
+		this.load.image('python', '..//assets/player/python.png');
 	}
 
 	create() {
