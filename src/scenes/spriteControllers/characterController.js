@@ -11,7 +11,6 @@ export default class characterController {
 		this.prevJump = 0;
 
 		this.lastShot = 100;
-		this.recoilOffset = 0;
 
 
 		this.curAnim = '';
@@ -77,7 +76,7 @@ export default class characterController {
 	}
 
 	shootProjectile() {
-		this.shootTimer = 20;
+		this.shootTimer = 30;
 		this.scene.projectileController.createProjectile();
 	}
 
@@ -228,21 +227,21 @@ export default class characterController {
 		}
 
 		var mouseForearmAngle = Phaser.Math.RadToDeg(targetForearmRad);
-
-		if (this.lastShot <= 20) {
+		console.log(this.arm.angle);
+		if (this.lastShot <= 10) {
 			var offset = 10;
 			if (this.movement.dir === "right") {
 				offset = -10;
 			}
 			this.arm.angle += offset/this.lastShot;
-			this.forearm.angle = this.arm.angle;
-		} else if (this.lastShot <= 25) {
+			this.forearm.angle = this.arm.angle + offset*15/this.lastShot;
+		} else if (this.lastShot <= 15) {
 			var offset = 7;
 			if (this.movement.dir === "right") {
 				offset = -7;
 			}
 			this.arm.angle -= offset;
-			this.forearm.angle = this.arm.angle;
+			this.forearm.angle = this.arm.angle  + offset*15/this.lastShot;;
 		} else {
 			this.arm.angle = mouseArmAngle;
 			this.forearm.angle = mouseForearmAngle;
