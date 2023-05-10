@@ -10,6 +10,9 @@ export default class characterController {
 		this.prevGrounded = 0;
 		this.prevJump = 0;
 
+		this.lastShot = 100;
+
+
 		this.curAnim = '';
 		this.self = this.scene.physics.add.sprite(this.movement.pos.x, this.movement.pos.y, 'player');
 		this.self.setBodySize(50, 150);
@@ -68,22 +71,12 @@ export default class characterController {
 			}
 			this.movement.dx = 0;
 		}
-		if (this.scene.input.activePointer.isDown && this.shootTimer <= 0) {
-			if (this.scene.mobile) {
-				var pointer = this.getNonJoyStickMobilePointer();
-				if (pointer.isDown) {
-					this.shootProjectile();
-				}
-			} else { //Not mobile
-				this.shootProjectile()
-			}
-		}
 
 		this.setPos();
 	}
 
 	shootProjectile() {
-		this.shootTimer = 20;
+		this.shootTimer = 30;
 		this.scene.projectileController.createProjectile();
 	}
 
@@ -200,10 +193,13 @@ export default class characterController {
 	handleArmAngle() {//Sets arm angle based on mouse									========[Function]===========
 		var mouseWorldX = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).x;
 		var mouseWorldY = this.scene.cameras.main.getWorldPoint(this.scene.input.x, this.scene.input.y).y;
+		this.crosshair.x = mouseWorldX;
+		this.crosshair.y = mouseWorldY;
 		if (this.scene.mobile) {
 			var pointer = this.getNonJoyStickMobilePointer();
 			mouseWorldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
 			mouseWorldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+			this.mobilePointerTimer += 1 * this.scene.deltaTime;
 		}
 
 		var targetArmRad = Phaser.Math.Angle.Between(
@@ -214,37 +210,91 @@ export default class characterController {
 			this.forearm.x, this.forearm.y,
 			mouseWorldX, mouseWorldY
 		)
-		var radAng = this.arm.angle*Math.PI/180;
-		if (targetArmRad < -Math.PI/2 && radAng > 0) {
+
+		var armRadAngle = this.arm.angle*Math.PI/180;
+		var forearmRadAngle = this.forearm.angle*Math.PI/180;
+		if (targetArmRad < -Math.PI/2 && armRadAngle > 0) {
 			targetArmRad += Math.PI*2;
-		} else if (targetArmRad > Math.PI/2 && radAng < 0) {
+		} else if (targetArmRad > Math.PI/2 && armRadAngle < 0) {
 				targetArmRad -= Math.PI*2;
 		}
 		var mouseArmAngle;
-		if ((radAng < targetArmRad && this.movement.dir === 'right') || radAng > targetArmRad && this.movement.dir === 'left' ) { //If arm going down
+		if (armRadAngle < targetArmRad && this.movement.dir === 'right' || armRadAngle > targetArmRad && this.movement.dir === 'left' ) { //If arm going down
 			mouseArmAngle = Phaser.Math.RadToDeg(targetArmRad);
 		} else { //If arm going up
-			const interpolatedArmRad = Phaser.Math.Interpolation.Bezier([radAng, targetArmRad], .07);
+			const interpolatedArmRad = Phaser.Math.Interpolation.Bezier([armRadAngle, targetArmRad], .07);
 			mouseArmAngle = Phaser.Math.RadToDeg(interpolatedArmRad);
 		}
 
 		var mouseForearmAngle = Phaser.Math.RadToDeg(targetForearmRad);
-		this.arm.angle = mouseArmAngle;
-		this.forearm.angle = mouseForearmAngle
+		if (this.lastShot <= 10) {
+			var offset = 10;
+			if (this.movement.dir === "right") {
+				offset = -10;
+			}
+			if (Math.abs(mouseForearmAngle) >= 90) {
+				offset = -offset;
+				this.forearm.angle = this.arm.angle - offset*5/this.lastShot;
+			} else {
+				this.forearm.angle = this.arm.angle + offset*15/this.lastShot;
+			}
+			this.arm.angle += offset/this.lastShot;
+		} else if (this.lastShot <= 15) {
+			var offset = 7;
+			if (this.movement.dir === "right") {
+				offset = -7;
+			}
+			if (Math.abs(mouseForearmAngle) >= 90) {
+				offset = -offset;
+				this.forearm.angle = this.arm.angle - offset*5/this.lastShot;
+			} else {
+				this.forearm.angle = this.arm.angle  + offset*15/this.lastShot;
+			}
+			this.arm.angle -= offset;
+		} else {
+			this.arm.angle = mouseArmAngle;
+			this.forearm.angle = mouseForearmAngle;
+		}
+
 		var yPosOffset = -1;
 
 		if (this.movement.dir === 'right') {
 			this.arm.setScale(.2,.2);
 			this.forearm.setScale(.2,.2);
+			this.gun.setScale(-.5, .5);
 		} else {
 			var yPosOffset = 2;
 			this.arm.setScale(.2,-.2);
 			this.forearm.setScale(.2,-.2);
+			this.gun.setScale(-.5, -.5);
 		}
-		var x = this.arm.x + 25*Math.cos(radAng) - yPosOffset*Math.sin(radAng);
-		var y = this.arm.y + 25*Math.sin(radAng) + yPosOffset*Math.cos(radAng);
+		var x = this.arm.x + 25*Math.cos(armRadAngle) - yPosOffset*Math.sin(armRadAngle);
+		var y = this.arm.y + 25*Math.sin(armRadAngle) + yPosOffset*Math.cos(armRadAngle);
 		this.forearm.x = x;
 		this.forearm.y = y;
+
+		var x = this.forearm.x + 25*Math.cos(forearmRadAngle) - yPosOffset*Math.sin(forearmRadAngle);
+		var y = this.forearm.y + 25*Math.sin(forearmRadAngle) + yPosOffset*Math.cos(forearmRadAngle);
+		this.gun.x = x;
+		this.gun.y = y;
+		this.gun.angle = this.forearm.angle;
+
+		this.lastShot += 1 * this.scene.deltaTime;
+
+		if (this.scene.input.activePointer.isDown && this.shootTimer <= 0) { //Handles shooting after arm updated
+			if (this.scene.mobile) {
+				var pointer = this.getNonJoyStickMobilePointer();
+				if (pointer.isDown) {
+					this.lastShot = 1;
+					this.shootProjectile();
+				}
+			} else { //Not mobile
+				this.lastShot = 1;
+				this.shootProjectile()
+				this.justShot = true;
+			}
+		}
+
 	}
 
 
@@ -267,13 +317,21 @@ export default class characterController {
 		this.runArmPos = {x: [15, 15, 13, 12, 13, 14, 14, 16, 18, 16, 13, 11, 11, 12, 13, 14], y: [-30, -28, -28, -30, -33, -37, -38, -39, -37, -37, -38, -41, -43, -41, -40, -36]};
 		this.idleArmPos = [-22, -21, -20, -19, -16, -12, -8, -5, -3, -1, -1, -3, -5, -8, -9, -12, -14, -16, -18, -20];
 		this.arm = this.scene.add.image(this.self.x, this.movement.pos.y - 35, 'playerArm')
-		this.forearm = this.scene.add.image(this.arm.x, this.arm.y, 'playerForearm');
-		this.arm.setScale(.2);
-		this.forearm.setScale(.2);
-		this.forearm.setOrigin(0,0);
-		this.arm.setOrigin(0, .5);
-		this.arm.setDepth(1);
-		this.forearm.setDepth(1);
+		.setOrigin(0, .5)
+		.setScale(.2)
+		.setDepth(1);
+		this.forearm = this.scene.add.image(this.arm.x, this.arm.y, 'playerForearm')
+		.setOrigin(0,0)
+		.setScale(.2)
+		.setDepth(1);
+		this.gun = this.scene.add.image(this.arm.x, this.arm.y, 'python')
+		.setDepth(1)
+		.setScale(-.5, .5);
+		var crosshairSize = 4;
+		if (this.scene.mobile) {
+			crosshairSize = 20;
+		}
+		this.crosshair = this.scene.add.circle(0, 0, crosshairSize, 0xffffff, .5);
 	}
 
 

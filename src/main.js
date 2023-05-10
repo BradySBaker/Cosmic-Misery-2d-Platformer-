@@ -13,7 +13,7 @@ const config = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 1000 },
-			debug: false
+			debug: true
 		}
 	},
 	plugins:{
@@ -31,3 +31,7 @@ game.scene.add('start', Start);
 game.scene.start('start'); //Creates fullscreen button
 
 
+var canvas = game.canvas;
+
+// Set the willReadFrequently attribute to true
+canvas.setAttribute('willReadFrequently', 'true');
