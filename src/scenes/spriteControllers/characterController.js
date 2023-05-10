@@ -227,21 +227,30 @@ export default class characterController {
 		}
 
 		var mouseForearmAngle = Phaser.Math.RadToDeg(targetForearmRad);
-		console.log(this.arm.angle);
 		if (this.lastShot <= 10) {
 			var offset = 10;
 			if (this.movement.dir === "right") {
 				offset = -10;
 			}
+			if (Math.abs(mouseForearmAngle) >= 90) {
+				offset = -offset;
+				this.forearm.angle = this.arm.angle - offset*5/this.lastShot;
+			} else {
+				this.forearm.angle = this.arm.angle + offset*15/this.lastShot;
+			}
 			this.arm.angle += offset/this.lastShot;
-			this.forearm.angle = this.arm.angle + offset*15/this.lastShot;
 		} else if (this.lastShot <= 15) {
 			var offset = 7;
 			if (this.movement.dir === "right") {
 				offset = -7;
 			}
+			if (Math.abs(mouseForearmAngle) >= 90) {
+				offset = -offset;
+				this.forearm.angle = this.arm.angle - offset*5/this.lastShot;
+			} else {
+				this.forearm.angle = this.arm.angle  + offset*15/this.lastShot;
+			}
 			this.arm.angle -= offset;
-			this.forearm.angle = this.arm.angle  + offset*15/this.lastShot;;
 		} else {
 			this.arm.angle = mouseArmAngle;
 			this.forearm.angle = mouseForearmAngle;

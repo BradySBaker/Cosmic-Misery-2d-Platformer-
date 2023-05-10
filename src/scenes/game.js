@@ -88,7 +88,7 @@ if (this.gameHeight <= 500) {
 this.cameras.main.startFollow(this.char.self, true, 0.5, 0.5, 0, yCameraOffset);
 this.cameras.main.setZoom(zoom);
 
-this.enemySpawner();
+// this.enemySpawner();
 
 if (this.physics.world.isPaused) {
 	this.physics.resume();
