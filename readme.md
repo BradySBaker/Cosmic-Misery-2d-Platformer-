@@ -1,4 +1,4 @@
-# shooterGame1
+# Cosmic Misery
 
 ## About
 The game is going to be set in an alien world. You run along the never ending landscape shooting enemies and gaining points.
