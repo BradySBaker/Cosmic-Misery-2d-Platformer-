@@ -10,6 +10,6 @@ update2: The character model is now animating and the arm follows the mouse smoo
 
 update3: The map is now fullscreen and there are randomely generating holes.
 
-Currently Playable At: https://bradysbaker.github.io/shooterGame1/[offline for now]
+Currently Playable At: https://bradysbaker.github.io/shooterGame1/ [offline for now]
 
-![](https://github.com/BradySBaker/Cosmic-Misery-2d-Platformer/blob/main/game.gif)
+![](https://github.com/BradySBaker/Cosmic-Misery-2d-Platformer-/blob/main/game.gif)
